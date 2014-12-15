@@ -9,21 +9,11 @@ let maxPx = Int(round(Double(1 + padding) * Double(extent)))
 
 class GeoJSONVT {
 
-    enum OptionType {
-        case maxZoom
-        case baseZoom
-        case maxPoints
-        case tolerance
-        case debug
-    }
-
-    let options = [
-        OptionType.maxZoom: 4,
-        OptionType.baseZoom: 14,
-        OptionType.maxPoints: 100,
-        OptionType.tolerance: 3,
-        OptionType.debug: 0
-    ]
+    var baseZoom: Int
+    var maxZoom: Int
+    var maxPoints: Int
+    var tolerance: Int
+    var debug: Bool
 
     var tiles: [Int: Tile]
 
@@ -31,38 +21,45 @@ class GeoJSONVT {
 
     var total = 0
 
-    func debug() -> Bool {
-        return (self.options[OptionType.debug] > 0)
-    }
+    init(data: String, baseZoom: Int = 14, maxZoom: Int = 4, maxPoints: Int = 100, tolerance: Int = 3, debug: Bool = false) {
+        self.baseZoom = baseZoom
+        self.maxZoom = maxZoom
+        self.maxPoints = maxPoints
+        self.tolerance = tolerance
+        self.debug = debug
 
-    init(data: String, options: (name: OptionType, value: Int)...) {
-        for option in options {
-            self.options[option.name] = option.value
-        }
-
-        if (self.debug()) {
+        if (self.debug) {
             // time 'preprocess data'
         }
 
-        let z2 = 1 << self.options[OptionType.baseZoom]!
+        let z2 = 1 << baseZoom
 
-        let features = Convert(data, self.options[OptionType.tolerance] / (z2 * extent))
+        let deserializedData = NSJSONSerialization.JSONObjectWithData(data.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)!,
+            options: nil, error: nil) as NSDictionary
 
-        if (self.debug()) {
+        let dictionary = [String: AnyObject]()
+
+        for key: String in deserializedData.allKeys {
+            dictionary[key] = deserializedData.objectForKey(key)
+        }
+
+        let features = Convert.convert(data: dictionary, tolerance: self.tolerance / (z2 * extent))
+
+        if (self.debug) {
             // time end 'preprocess data'
             // time 'generate tiles up to z' + maxZoom
         }
 
-        splitTile(features, 0, 0, 0)
+        self.splitTile(features, 0, 0, 0)
 
-        if (self.debug()) {
+        if (self.debug) {
             // log "features: self.tiles[0].numFeatures, points: self.tiles[0].numPoints
             // time end 'generate tiles up to z' + maxZoom
             // log "tiles generated: self. total, self.stats
         }
     }
 
-    func splitTile(features: [Feature], z: Int, x: Int, y: Int, cz: Int, cx: Int, cy: Int) {
+    func splitTile(features: [Feature], z: Int, x: Int, y: Int, cz: Int = 0, cx: Int = 0, cy: Int = 0) {
 
         var stack: [AnyObject] = [features, z, x, y]
 
@@ -73,21 +70,21 @@ class GeoJSONVT {
             let y: Int = stack.removeAtIndex(0)
 
             let z2 = 1 << z
-            let id = toID(z, x, y)
+            let id = toID(z: z, x: x, y: y)
             var tile: Tile
-            let tileTolerance = (z == self.options[OptionType.baseZoom] ? 0 : self.options[OptionType.tolerance] / (z2 * extent))
+            let tileTolerance = (z == self.options[OptionType.baseZoom] ? 0 : self.tolerance / (z2 * extent))
 
             if (self.tiles.indexForKey(id) != nil) {
                 tile = self.tiles[id]!
             } else {
-                if (self.debug()) {
+                if (self.debug) {
                     // time 'creation'
                 }
 
-                tile = Tile.createTile(features, z2: z2, tx: x, ty: y, tolerance: tileTolerance, extent: extent, noSimplify: (z == self.options[OptionType.baseZoom]))
+                tile = Tile.createTile(features, z2: z2, tx: x, ty: y, tolerance: tileTolerance, extent: extent, noSimplify: (z == self.baseZoom))
                 self.tiles[id] = tile
 
-                if (self.debug()) {
+                if (self.debug) {
                     // log "tile z" + z, x, y + " (features: tile.numFeatures, points: tile.numPoints, simplified: tile.numSimplified)
                     // time end 'creation'
 
@@ -100,19 +97,19 @@ class GeoJSONVT {
                 }
             }
 
-            if (!cz && (z == self.options[OptionType.maxZoom] || tile.numPoints <= self.options[OptionType.maxPoints] ||
-                    isClippedSquare(tile.features)) || z == self.options[OptionType.baseZoom] || z == cz) {
+            if (cz == 0 && (z == self.maxZoom || tile.numPoints <= self.maxPoints ||
+                    isClippedSquare(tile.features)) || z == self.baseZoom || z == cz) {
                 tile.source = features
                 continue
             }
 
-            if (cz) {
+            if (cz > 0) {
                 tile.source = features
             } else {
                 tile.source = nil
             }
 
-            if (self.debug()) {
+            if (self.debug) {
                 // time 'clipping'
             }
 
@@ -140,16 +137,16 @@ class GeoJSONVT {
             tl = bl = tr = br = left = right = -1
 
             if (cz == 0 || goLeft) {
-                left = clip(features, z2, x - k1, x + k3, 0, intersectX)
+                left = Clip.clip(features, z2, x - k1, x + k3, 0, intersectX)
             } else if (cz == 0 || !goLeft) {
-                right = clip(features, z2, x + k2, x + k4, 0, intersectX)
+                right = Clip.clip(features, z2, x + k2, x + k4, 0, intersectX)
             }
 
             if (left >= 0) {
                 if (cz == 0 || goTop) {
-                    tl = clip(left, z2, y - k1, y + k3, 1, intersectY)
+                    tl = Clip.clip(left, z2, y - k1, y + k3, 1, intersectY)
                 } else if (cz == 0 || !goTop) {
-                    bl = clip(left, z2, y + k2, y + k4, 1, intersectY)
+                    bl = Clip.clip(left, z2, y + k2, y + k4, 1, intersectY)
                 }
             }
 
@@ -192,98 +189,80 @@ class GeoJSONVT {
                 stack.append(x * 2 + 1)
                 stack.append(y * 2 + 1)
             }
-
-//            var k1 = 0.5 * padding,
-//            k2 = 0.5 - k1,
-//            k3 = 0.5 + k1,
-//            k4 = 1 + k1,
-//
-//            tl, bl, tr, br, left, right,
-//            m, goLeft, goTop;
-//
-//            if (cz) { // if we have a specific tile to drill down to, calculate where to go
-//                m = 1 << (cz - z);
-//                goLeft = cx / m - x < 0.5;
-//                goTop = cy / m - y < 0.5;
-//            }
-//
-//            tl = bl = tr = br = left = right = null;
-//
-//            if (!cz ||  goLeft) left  = clip(features, z2, x - k1, x + k3, 0, intersectX);
-//            if (!cz || !goLeft) right = clip(features, z2, x + k2, x + k4, 0, intersectX);
-//
-//            if (left) {
-//                if (!cz ||  goTop) tl = clip(left, z2, y - k1, y + k3, 1, intersectY);
-//                if (!cz || !goTop) bl = clip(left, z2, y + k2, y + k4, 1, intersectY);
-//            }
-//
-//            if (right) {
-//                if (!cz ||  goTop) tr = clip(right, z2, y - k1, y + k3, 1, intersectY);
-//                if (!cz || !goTop) br = clip(right, z2, y + k2, y + k4, 1, intersectY);
-//            }
-//
-//            if (debug > 1) console.timeEnd('clipping');
-//
-//            if (tl) stack.push(tl, z + 1, x * 2,     y * 2);
-//            if (bl) stack.push(bl, z + 1, x * 2,     y * 2 + 1);
-//            if (tr) stack.push(tr, z + 1, x * 2 + 1, y * 2);
-//            if (br) stack.push(br, z + 1, x * 2 + 1, y * 2 + 1);
-
         }
     }
 
     func getTile(z: Int, x: Int, y: Int) -> Tile {
 
-//        var id = toID(z, x, y);
-//        if (this.tiles[id]) return this.tiles[id];
-//
-//        var debug = this.options.debug;
-//
-//        if (debug > 1) console.log('drilling down to z%d-%d-%d', z, x, y);
-//
-//        var z0 = z,
-//        x0 = x,
-//        y0 = y,
-//        parent;
-//
-//        while (!parent && z0 > 0) {
-//            z0--;
-//            x0 = Math.floor(x0 / 2);
-//            y0 = Math.floor(y0 / 2);
-//            parent = this.tiles[toID(z0, x0, y0)];
-//        }
-//
-//        if (debug > 1) console.log('found parent tile z%d-%d-%d', z0, x0, y0);
-//
-//        if (parent.source) {
-//            if (isClippedSquare(parent.features)) return parent;
-//
-//            if (debug) console.time('drilling down');
-//            this.splitTile(parent.source, z0, x0, y0, z, x, y);
-//            if (debug) console.timeEnd('drilling down');
-//        }
-//        
-//        return this.tiles[id];
+        let id = self.toID(z: z, x: x, y: y)
+        if (self.tiles.indexForKey(id) != nil) {
+            return self.tiles[id]!
+        }
 
+        if (self.debug) {
+            // log 'drilling down to z%d-%d-%d', z, x, y
+        }
+
+        var z0 = z
+        var x0 = x
+        var y0 = y
+        var parent: Tile? = nil
+
+        while (parent == nil && z0 > 0) {
+            z0--
+            x0 = floor(Double(x0) / 2)
+            y0 = floor(Double(y0) / 2)
+            let checkID = self.toID(z: z0, x: x0, y: y0)
+            parent = (self.tiles.indexForKey(checkID) ? self.tiles[checkID]! : nil)
+        }
+
+        if (self.debug) {
+            // log ''found parent tile z%d-%d-%d', z0, x0, y0
+        }
+
+        if (parent!.source != nil) {
+            if (self.isClippedSquare(features: parent!.features)) {
+                return parent
+            }
+
+            if (self.debug) {
+                // time 'drilling down'
+            }
+
+            self.splitTile(parent!.source, z: z0, x: x0, y: y0, cz: z, cx: x, cy: y)
+
+            if (self.debug) {
+                // time end 'drilling down
+            }
+
+            return self.tiles[id]
+        }
     }
 
     func isClippedSquare(features: [Feature]) -> Bool {
 
-//        if (features.length !== 1) return false;
-//
-//        var feature = features[0];
-//        if (feature.type !== 3 || feature.geometry.length > 1) return false;
-//
-//        for (var i = 0; i < feature.geometry[0].length; i++) {
-//            var p = feature.geometry[0][i];
-//            if ((p[0] !== minPx && p[0] !== maxPx) ||
-//            (p[1] !== minPx && p[1] !== maxPx)) return false;
-//        }
-//        return true;
+        if (features.count != 1) {
+            return false
+        }
 
+        let feature = features.first!
+
+        if (feature.type != .Polygon || feature.geometry.count > 1) {
+            return false
+        }
+
+        for i in 0...feature.geometry.first!.count {
+            let p = feature.geometry.first![i]
+            if ((p.x != minPx && p.x != maxPx) ||
+                (p.y != minPx && p.y != maxPx)) {
+                    return false
+            }
+        }
+
+        return true
     }
 
-    func toID(z: Int, x: Int, y: Int) -> Int {
+    func toID(#z: Int, x: Int, y: Int) -> Int {
         return (((1 << z) * y + x) * 32) + z;
     }
 
@@ -333,7 +312,7 @@ class Tile {
     var numPoints: Int
     var numSimplified: Int
     var numFeatures: Int
-    var source: AnyObject
+    var source: AnyObject?
 
     init() {
 
@@ -393,57 +372,6 @@ class Tile {
         if (transformed.count > 0) {
             tile.features.append(Feature(geometry: transformed, type: type, tags: feature.tags))
         }
-
-//        var geom = feature.geometry,
-//        type = feature.type,
-//        transformed = [],
-//        sqTolerance = tolerance * tolerance,
-//        i, j, ring, p;
-//
-//        if (type === 1) {
-//            for (i = 0; i < geom.length; i++) {
-//                transformed.push(transformPoint(geom[i], z2, tx, ty, extent));
-//                tile.numPoints++;
-//                tile.numSimplified++;
-//            }
-//
-//        } else {
-//
-//            // simplify and transform projected coordinates for tile geometry
-//            for (i = 0; i < geom.length; i++) {
-//                ring = geom[i];
-//
-//                // filter out tiny polylines & polygons
-//                if (!noSimplify && ((type === 2 && ring.dist < tolerance) ||
-//                    (type === 3 && ring.area < sqTolerance))) {
-//                        tile.numPoints += ring.length;
-//                        continue;
-//                }
-//
-//                var transformedRing = [];
-//
-//                for (j = 0; j < ring.length; j++) {
-//                    p = ring[j];
-//                    // keep points with significance > tolerance and points introduced by clipping
-//                    if (noSimplify || p[2] > sqTolerance) {
-//                        transformedRing.push(transformPoint(p, z2, tx, ty, extent));
-//                        tile.numSimplified++;
-//                    }
-//                    tile.numPoints++;
-//                }
-//
-//                transformed.push(transformedRing);
-//            }
-//        }
-//        
-//        if (transformed.length) {
-//            tile.features.push({
-//                geometry: transformed,
-//                type: type,
-//                tags: feature.tags || null
-//            });
-//        }
-
     }
 
     private class func transformPoint(p: Point, z2: Int, tx: Int, ty: Int, extent: Int) -> Point {
@@ -495,44 +423,6 @@ class Clip {
 
             return (clipped.count > 0 ? clipped : [])
         }
-
-//        k1 /= scale;
-//        k2 /= scale;
-//
-//        var clipped = [];
-//
-//        for (var i = 0; i < features.length; i++) {
-//
-//            var feature = features[i],
-//            geometry = feature.geometry,
-//            type = feature.type,
-//            min, max;
-//
-//            if (feature.min) {
-//                min = feature.min[axis];
-//                max = feature.max[axis];
-//
-//                if (min >= k1 && max <= k2) { // trivial accept
-//                    clipped.push(feature);
-//                    continue;
-//                } else if (min > k2 || max < k1) continue; // trivial reject
-//            }
-//
-//            var slices = type === 1 ?
-//                clipPoints(geometry, k1, k2, axis) :
-//                clipGeometry(geometry, k1, k2, axis, intersect, type === 3);
-//
-//            if (slices.length) {
-//                clipped.push({
-//                    geometry: slices,
-//                    type: type,
-//                    tags: features[i].tags || null
-//                });
-//            }
-//        }
-//        
-//        return clipped.length ? clipped : null;
-
     }
 
     class func clipPoints(geometry: [Point], k1: Double, k2: Double, axis: Int) -> [Point] {
@@ -613,78 +503,9 @@ class Clip {
 
             return slices
         }
-
-//        var slices = [];
-//
-//        for (var i = 0; i < geometry.length; i++) {
-//
-//            var ak = 0,
-//            bk = 0,
-//            b = null,
-//            points = geometry[i],
-//            area = points.area,
-//            dist = points.dist,
-//            len = points.length,
-//            a, j;
-//
-//            var slice = [];
-//
-//            for (j = 0; j < len - 1; j++) {
-//                a = b || points[j];
-//                b = points[j + 1];
-//                ak = bk || a[axis];
-//                bk = b[axis];
-//
-//                if (ak < k1) {
-//
-//                    if ((bk > k2)) { // ---|-----|-->
-//                        slice.push(intersect(a, b, k1), intersect(a, b, k2));
-//                        if (!closed) slice = newSlice(slices, slice, area, dist);
-//
-//                    } else if (bk >= k1) slice.push(intersect(a, b, k1)); // ---|-->  |
-//
-//                } else if (ak > k2) {
-//
-//                    if ((bk < k1)) { // <--|-----|---
-//                        slice.push(intersect(a, b, k2), intersect(a, b, k1));
-//                        if (!closed) slice = newSlice(slices, slice, area, dist);
-//
-//                    } else if (bk <= k2) slice.push(intersect(a, b, k2)); // |  <--|---
-//
-//                } else {
-//
-//                    slice.push(a);
-//
-//                    if (bk < k1) { // <--|---  |
-//                        slice.push(intersect(a, b, k1));
-//                        if (!closed) slice = newSlice(slices, slice, area, dist);
-//
-//                    } else if (bk > k2) { // |  ---|-->
-//                        slice.push(intersect(a, b, k2));
-//                        if (!closed) slice = newSlice(slices, slice, area, dist);
-//                    }
-//                    // | --> |
-//                }
-//            }
-//
-//            a = points[len - 1];
-//            ak = a[axis];
-//            if (ak >= k1 && ak <= k2) slice.push(a);
-//            
-//            var sliceLen = slice.length;
-//            
-//            // close the polygon if its endpoints are not the same after clipping
-//            if (closed && slice[0] !== slice[sliceLen - 1]) slice.push(slice[0]);
-//            
-//            // add the final slice
-//            newSlice(slices, slice, area, dist);
-//        }
-//        
-//        return slices;
-
     }
 
-    class func newSlice(slices: [Slice], slice: Slice, area: Int, dist: Int) {
+    class func newSlice(slices: [Slice], slice: Slice, area: Int, dist: Int) -> [Int] {
 
         if (slice.points.count > 0) {
             slice.area = area
@@ -692,15 +513,8 @@ class Clip {
             slices.append(slice)
         }
 
+        return [Int]()
     }
-
-//        if (slice.length) {
-//                slice.area = area;
-//                slice.dist = dist;
-//                slices.push(slice);
-//            }
-//            return [];
-
 }
 
 class Simplify {
@@ -743,41 +557,6 @@ class Simplify {
             last = stack.removeLast()
             first = stack.removeLast()
         }
-
-//        var sqTolerance = tolerance * tolerance,
-//        len = points.length,
-//        first = 0,
-//        last = len - 1,
-//        stack = [],
-//        i, maxSqDist, sqDist, index;
-//
-//        // always retain the endpoints (1 is the max value)
-//        points[first][2] = 1;
-//        points[last][2] = 1;
-//
-//        // avoid recursion by using a stack
-//        while (last) {
-//
-//            maxSqDist = 0;
-//
-//            for (i = first + 1; i < last; i++) {
-//                sqDist = getSqSegDist(points[i], points[first], points[last]);
-//
-//                if (sqDist > maxSqDist) {
-//                    index = i;
-//                    maxSqDist = sqDist;
-//                }
-//            }
-//
-//            if (maxSqDist > sqTolerance) {
-//                points[index][2] = maxSqDist; // save the point importance in squared pixels as a z coordinate
-//                stack.push(first, index, index, last);
-//            }
-//            
-//            last = stack.pop();
-//            first = stack.pop();
-//        }
-
     }
 
     class func getSqSegDist(p: Point, a: Point, b: Point) -> Int {
@@ -805,32 +584,6 @@ class Simplify {
 
         return dx * dx + dy * dy
     }
-
-//        var x = a[0], y = a[1],
-//        bx = b[0], by = b[1],
-//        px = p[0], py = p[1],
-//        dx = bx - x,
-//        dy = by - y;
-//
-//        if (dx !== 0 || dy !== 0) {
-//
-//            var t = ((px - x) * dx + (py - y) * dy) / (dx * dx + dy * dy);
-//
-//            if (t > 1) {
-//                x = bx;
-//                y = by;
-//
-//            } else if (t > 0) {
-//                x += dx * t;
-//                y += dy * t;
-//            }
-//        }
-//        
-//        dx = px - x;
-//        dy = py - y;
-//        
-//        return dx * dx + dy * dy;
-
 }
 
 class Slice {
@@ -865,22 +618,6 @@ class Convert {
         }
 
         return features
-
-//        var features = [];
-//
-//        if (data.type === 'FeatureCollection') {
-//            for (var i = 0; i < data.features.length; i++) {
-//                convertFeature(features, data.features[i], tolerance);
-//            }
-//        } else if (data.type === 'Feature') {
-//            convertFeature(features, data, tolerance);
-//
-//        } else {
-//            // single geometry or a geometry collection
-//            convertFeature(features, {geometry: data}, tolerance);
-//        }
-//        return features;
-
     }
 
     class func convertFeature(features: [Feature], feature: Feature, tolerance: Int) {
@@ -916,70 +653,14 @@ class Convert {
         } else {
             prinln("Unsupported GeoJSON type: " + geom.type)
         }
-
-//        var geom = feature.geometry,
-//        type = geom.type,
-//        coords = geom.coordinates,
-//        tags = feature.properties,
-//        i, j, rings;
-//
-//        if (type === 'Point') {
-//            features.push(create(tags, 1, [projectPoint(coords)]));
-//
-//        } else if (type === 'MultiPoint') {
-//            features.push(create(tags, 1, project(coords)));
-//
-//        } else if (type === 'LineString') {
-//            features.push(create(tags, 2, [project(coords, tolerance)]));
-//
-//        } else if (type === 'MultiLineString' || type === 'Polygon') {
-//            rings = [];
-//            for (i = 0; i < coords.length; i++) {
-//                rings.push(project(coords[i], tolerance));
-//            }
-//            features.push(create(tags, type === 'Polygon' ? 3 : 2, rings));
-//
-//        } else if (type === 'MultiPolygon') {
-//            rings = [];
-//            for (i = 0; i < coords.length; i++) {
-//                for (j = 0; j < coords[i].length; j++) {
-//                    rings.push(project(coords[i][j], tolerance));
-//                }
-//            }
-//            features.push(create(tags, 3, rings));
-//
-//        } else if (type === 'GeometryCollection') {
-//            for (i = 0; i < geom.geometries.length; i++) {
-//                convertFeature(features, {
-//                    geometry: geom.geometries[i],
-//                    properties: tags
-//                    }, tolerance);
-//            }
-//            
-//        } else {
-//            console.warn('Unsupported GeoJSON type: ' + geom.type);
-//        }
-
     }
 
     class func create(tags: [Int], type: Feature.Type, geometry: [Feature]) -> Feature {
 
         var feature = Feature(geometry: geometry, type: type, tags: tags, min: Point(x: 1, y: 1), max: Point(x: 0, y: 0))
         calcBBox(feature)
+
         return feature
-
-//    function create(tags, type, geometry) {
-//        var feature = {
-//            geometry: geometry,
-//            type: type,
-//            tags: tags || null,
-//            min: [1, 1], // initial bbox values;
-//            max: [0, 0]  // note that all coords are in [0..1] range
-//        };
-//        calcBBox(feature);
-//        return feature;
-//    }
-
     }
 
     class func project(lonlats: [LonLat], tolerance: Int = 0) {
@@ -992,20 +673,8 @@ class Convert {
             Simplify.simplify(projected, tolerance: tolerance)
             calcSize(projected)
         }
+
         return projected
-
-//    function project(lonlats, tolerance) {
-//        var projected = [];
-//            for (var i = 0; i < lonlats.length; i++) {
-//                projected.push(projectPoint(lonlats[i]));
-//            }
-//            if (tolerance) {
-//                simplify(projected, tolerance);
-//                calcSize(projected);
-//            }
-//            return projected;
-//    }
-
     }
 
     class func projectPoint(p: Point) -> [Int] {
@@ -1015,14 +684,6 @@ class Convert {
         let y = 0.5 - 0.25 * log((1 + sin) / (1 - sin)) / M_PI
 
         return [x, y, 0]
-
-//    function projectPoint(p) {
-//        var sin = Math.sin(p[1] * Math.PI / 180),
-//        x = (p[0] / 360 + 0.5),
-//        y = (0.5 - 0.25 * Math.log((1 + sin) / (1 - sin)) / Math.PI);
-//    return [x, y, 0];
-//    }
-
     }
 
     class func calcSize(points: [Point]) {
@@ -1043,25 +704,6 @@ class Convert {
 
         points.area = abs(area / 2)
         points.dist = dist
-
-//    // calculate area and length of the poly
-//    function calcSize(points) {
-//        var area = 0,
-//        dist = 0;
-//
-//        for (var i = 0, a, b; i < points.length - 1; i++) {
-//            a = b || points[i];
-//            b = points[i + 1];
-//
-//            area += a[0] * b[1] - b[0] * a[1];
-//
-//            // use Manhattan distance instead of Euclidian one to avoid expensive square root computation
-//            dist += Math.abs(b[0] - a[0]) + Math.abs(b[1] - a[1]);
-//        }
-//        points.area = Math.abs(area / 2);
-//        points.dist = dist;
-//    }
-
     }
 
     class func calcBBox(var feature: Feature) -> Feature {
@@ -1077,24 +719,8 @@ class Convert {
                 calcRingBBox(min, max, geometry[i])
             }
         }
+
         return feature
-
-//    // calculate the feature bounding box for faster clipping later
-//    function calcBBox(feature) {
-//        var geometry = feature.geometry,
-//        min = feature.min,
-//        max = feature.max;
-//
-//        if (feature.type === 1) {
-//            calcRingBBox(min, max, geometry);
-//        } else {
-//            for (var i = 0; i < geometry.length; i++) {
-//                calcRingBBox(min, max, geometry[i]);
-//            }
-//        }
-//        return feature;
-//    }
-
     }
 
     class func calcRingBBox(var min: Point, var max: Point, points: [Point]) {
@@ -1106,22 +732,6 @@ class Convert {
             min.y = min(p.y, min.y)
             max.y = max(p.y, max.y)
         }
-
-//    function calcRingBBox(min, max, points) {
-//        for (var i = 0, p; i < points.length; i++) {
-//            p = points[i];
-//            min[0] = Math.min(p[0], min[0]);
-//            max[0] = Math.max(p[0], max[0]);
-//            min[1] = Math.min(p[1], min[1]);
-//            max[1] = Math.max(p[1], max[1]);
-//        }
-//    }
-
     }
 
 }
-
-
-
-
-
