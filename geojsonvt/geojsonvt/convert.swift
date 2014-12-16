@@ -139,7 +139,7 @@ class Convert {
             projected.addMember(Convert.projectPoint(lonlats[i]))
         }
         if (tolerance > 0) {
-//            Simplify.simplify(pointCollection: projected, tolerance: tolerance)
+            Simplify.simplify(points: projected, tolerance: tolerance)
             Convert.calcSize(geometryContainer: projected)
         }
 
