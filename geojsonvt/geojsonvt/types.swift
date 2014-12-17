@@ -11,7 +11,7 @@ class LonLat {
 }
 
 class ProjectedGeometry {
-
+    // abstract
 }
 
 class ProjectedPoint: ProjectedGeometry {
@@ -74,7 +74,7 @@ class ProjectedFeature {
 }
 
 class TileGeometry {
-
+    // abstract
 }
 
 class TilePoint: TileGeometry {
