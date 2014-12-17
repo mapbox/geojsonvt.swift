@@ -1,3 +1,5 @@
+import Foundation
+
 class Simplify {
 
     class func simplify(#points: ProjectedGeometryContainer, tolerance: Double) {

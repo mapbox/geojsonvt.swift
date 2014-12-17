@@ -1,3 +1,5 @@
+import Foundation
+
 class Clip {
 
     class func clip(#features: [ProjectedFeature], scale: Int, var k1: Double, var k2: Double, axis: Int,

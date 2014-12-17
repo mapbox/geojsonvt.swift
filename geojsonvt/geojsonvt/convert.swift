@@ -1,3 +1,5 @@
+import Foundation
+
 typealias JSONValue = Any
 typealias JSON = Dictionary<String, JSONValue>
 

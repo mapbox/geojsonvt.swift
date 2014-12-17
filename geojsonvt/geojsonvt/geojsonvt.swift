@@ -1,3 +1,5 @@
+import Foundation
+
 let extent: Double = 4096
 let padding = 8 / 512
 let minPx = Int(round(-Double(padding) * extent))

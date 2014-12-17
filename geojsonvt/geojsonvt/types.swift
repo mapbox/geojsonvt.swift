@@ -1,3 +1,5 @@
+import Foundation
+
 class LonLat {
 
     let lon: Double

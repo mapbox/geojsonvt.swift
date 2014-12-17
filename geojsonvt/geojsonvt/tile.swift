@@ -1,3 +1,5 @@
+import Foundation
+
 class Tile {
 
     var features = [TileFeature]()

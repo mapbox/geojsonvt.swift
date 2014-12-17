@@ -12,6 +12,13 @@
 		DDD6C9491A42459000EA4FD0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DDD6C9471A42459000EA4FD0 /* Main.storyboard */; };
 		DDD6C94B1A42459000EA4FD0 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DDD6C94A1A42459000EA4FD0 /* Images.xcassets */; };
 		DDD6C94E1A42459000EA4FD0 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = DDD6C94C1A42459000EA4FD0 /* LaunchScreen.xib */; };
+		DDD6C9611A4246FD00EA4FD0 /* geojsonvt.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDD6C9341A40F77100EA4FD0 /* geojsonvt.swift */; };
+		DDD6C9621A4246FF00EA4FD0 /* types.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDD6C92A1A3F9F4E00EA4FD0 /* types.swift */; };
+		DDD6C9631A42470200EA4FD0 /* convert.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDD6C9281A3F9F1600EA4FD0 /* convert.swift */; };
+		DDD6C9641A42470200EA4FD0 /* simplify.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDD6C92C1A3FA03D00EA4FD0 /* simplify.swift */; };
+		DDD6C9651A42470200EA4FD0 /* tile.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDD6C9321A40F74D00EA4FD0 /* tile.swift */; };
+		DDD6C9661A42470200EA4FD0 /* clip.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDD6C9301A40F73700EA4FD0 /* clip.swift */; };
+		DDD6C9671A42471300EA4FD0 /* threestates.geojson in Resources */ = {isa = PBXBuildFile; fileRef = DDD6C92E1A40F70400EA4FD0 /* threestates.geojson */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -160,8 +167,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				DDD6C9491A42459000EA4FD0 /* Main.storyboard in Resources */,
-				DDD6C94E1A42459000EA4FD0 /* LaunchScreen.xib in Resources */,
 				DDD6C94B1A42459000EA4FD0 /* Images.xcassets in Resources */,
+				DDD6C94E1A42459000EA4FD0 /* LaunchScreen.xib in Resources */,
+				DDD6C9671A42471300EA4FD0 /* threestates.geojson in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -174,6 +182,12 @@
 			files = (
 				DDD6C9461A42459000EA4FD0 /* ViewController.swift in Sources */,
 				DDD6C9441A42459000EA4FD0 /* AppDelegate.swift in Sources */,
+				DDD6C9641A42470200EA4FD0 /* simplify.swift in Sources */,
+				DDD6C9631A42470200EA4FD0 /* convert.swift in Sources */,
+				DDD6C9611A4246FD00EA4FD0 /* geojsonvt.swift in Sources */,
+				DDD6C9661A42470200EA4FD0 /* clip.swift in Sources */,
+				DDD6C9621A4246FF00EA4FD0 /* types.swift in Sources */,
+				DDD6C9651A42470200EA4FD0 /* tile.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
