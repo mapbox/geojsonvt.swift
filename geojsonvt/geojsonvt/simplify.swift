@@ -1,14 +1,14 @@
 class Simplify {
 
-    class func simplify(#points: ProjectedGeometryContainer, tolerance: Int) {
+    class func simplify(#points: ProjectedGeometryContainer, tolerance: Double) {
 
         let sqTolerance = tolerance * tolerance
         let len = points.members.count
         var first = 0
         var last = len - 1
         var stack = [Int]()
-        var maxSqDist: Int = 0
-        var sqDist: Int = 0
+        var maxSqDist: Double = 0
+        var sqDist: Double = 0
         var index: Int = 0
 
         (points.members[first] as ProjectedPoint).z = 1
@@ -42,7 +42,7 @@ class Simplify {
         }
     }
 
-    class func getSqSegDist(p: ProjectedPoint, a: ProjectedPoint, b: ProjectedPoint) -> Int {
+    class func getSqSegDist(p: ProjectedPoint, a: ProjectedPoint, b: ProjectedPoint) -> Double {
 
         var x = a.x
         var y = a.y
@@ -65,6 +65,6 @@ class Simplify {
         dx = p.x - x
         dy = p.y - y
         
-        return Int(dx * dx + dy * dy)
+        return dx * dx + dy * dy
     }
 }

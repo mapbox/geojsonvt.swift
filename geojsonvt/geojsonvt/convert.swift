@@ -13,7 +13,7 @@ enum JSONGeometryType: String {
 
 class Convert {
 
-    class func convert(#data: JSON, tolerance: Int) -> [ProjectedFeature] {
+    class func convert(#data: JSON, tolerance: Double) -> [ProjectedFeature] {
 
         var features = [ProjectedFeature]()
 
@@ -30,7 +30,7 @@ class Convert {
         return features
     }
 
-    class func convertFeature(var #features: [ProjectedFeature], feature: JSON, tolerance: Int) {
+    class func convertFeature(var #features: [ProjectedFeature], feature: JSON, tolerance: Double) {
 
         let geom = feature["geometry"] as JSON
         let type = geom["type"] as JSONGeometryType
@@ -79,7 +79,7 @@ class Convert {
                     points.append(LonLat(coordinates: coordinatePair))
                 }
                 let ring = Convert.project(lonlats: points, tolerance: tolerance)
-                rings.addMember(ring)
+                rings.members.append(ring)
             }
 
             let projectedType = (type == JSONGeometryType.Polygon ?
@@ -101,7 +101,7 @@ class Convert {
                         points.append(LonLat(coordinates: coordinatePair))
                     }
                     let ring = Convert.project(lonlats: points, tolerance: tolerance)
-                    rings.addMember(ring)
+                    rings.members.append(ring)
                 }
             }
 
@@ -132,11 +132,11 @@ class Convert {
         return feature
     }
 
-    class func project(#lonlats: [LonLat], tolerance: Int = 0) -> ProjectedGeometryContainer {
+    class func project(#lonlats: [LonLat], tolerance: Double = 0) -> ProjectedGeometryContainer {
 
         var projected = ProjectedGeometryContainer()
         for i in 0...lonlats.count {
-            projected.addMember(Convert.projectPoint(lonlats[i]))
+            projected.members.append(Convert.projectPoint(lonlats[i]))
         }
         if (tolerance > 0) {
             Simplify.simplify(points: projected, tolerance: tolerance)

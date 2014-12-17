@@ -30,6 +30,10 @@ class ProjectedPoint: ProjectedGeometry {
         return (x >= 0 && y >= 0 && z >= 0)
     }
 
+    func isEqualToPoint(p2: ProjectedPoint) -> Bool {
+        return (self.x == p2.x && self.y == p2.y && self.z == p2.z)
+    }
+
 }
 
 class ProjectedGeometryContainer: ProjectedGeometry {
@@ -41,10 +45,6 @@ class ProjectedGeometryContainer: ProjectedGeometry {
 
     init(members: [ProjectedGeometry] = []) {
         self.members = members
-    }
-
-    func addMember(member: ProjectedGeometry) {
-        self.members.append(member)
     }
 
 }
@@ -73,5 +73,44 @@ class ProjectedFeature {
     }
 }
 
+class TileGeometry {
 
+}
 
+class TilePoint: TileGeometry {
+
+    var x: Int
+    var y: Int
+
+    init(x: Int, y: Int) {
+        self.x = x
+        self.y = y
+    }
+
+}
+
+class TileRing: TileGeometry {
+
+    var points: [TilePoint]
+
+    init(points: [TilePoint] = []) {
+        self.points = points
+    }
+
+}
+
+typealias TileFeatureType = ProjectedFeatureType
+
+class TileFeature {
+
+    let geometry: [TileGeometry]
+    let type: TileFeatureType
+    let tags: [String]
+
+    init(geometry: [TileGeometry], type: TileFeatureType, tags: [String]) {
+        self.geometry = geometry
+        self.type = type
+        self.tags = tags
+    }
+
+}

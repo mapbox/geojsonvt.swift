@@ -11,6 +11,10 @@
 		DDD6C9291A3F9F1600EA4FD0 /* convert.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDD6C9281A3F9F1600EA4FD0 /* convert.swift */; };
 		DDD6C92B1A3F9F4E00EA4FD0 /* types.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDD6C92A1A3F9F4E00EA4FD0 /* types.swift */; };
 		DDD6C92D1A3FA03D00EA4FD0 /* simplify.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDD6C92C1A3FA03D00EA4FD0 /* simplify.swift */; };
+		DDD6C92F1A40F70400EA4FD0 /* threestates.geojson in Resources */ = {isa = PBXBuildFile; fileRef = DDD6C92E1A40F70400EA4FD0 /* threestates.geojson */; };
+		DDD6C9311A40F73700EA4FD0 /* clip.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDD6C9301A40F73700EA4FD0 /* clip.swift */; };
+		DDD6C9331A40F74D00EA4FD0 /* tile.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDD6C9321A40F74D00EA4FD0 /* tile.swift */; };
+		DDD6C9351A40F77100EA4FD0 /* geojsonvt.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDD6C9341A40F77100EA4FD0 /* geojsonvt.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,6 +24,10 @@
 		DDD6C9281A3F9F1600EA4FD0 /* convert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = convert.swift; sourceTree = "<group>"; };
 		DDD6C92A1A3F9F4E00EA4FD0 /* types.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = types.swift; sourceTree = "<group>"; };
 		DDD6C92C1A3FA03D00EA4FD0 /* simplify.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = simplify.swift; sourceTree = "<group>"; };
+		DDD6C92E1A40F70400EA4FD0 /* threestates.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = threestates.geojson; sourceTree = "<group>"; };
+		DDD6C9301A40F73700EA4FD0 /* clip.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = clip.swift; sourceTree = "<group>"; };
+		DDD6C9321A40F74D00EA4FD0 /* tile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = tile.swift; sourceTree = "<group>"; };
+		DDD6C9341A40F77100EA4FD0 /* geojsonvt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = geojsonvt.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +64,9 @@
 				DDD6C92A1A3F9F4E00EA4FD0 /* types.swift */,
 				DDD6C9281A3F9F1600EA4FD0 /* convert.swift */,
 				DDD6C92C1A3FA03D00EA4FD0 /* simplify.swift */,
+				DDD6C9301A40F73700EA4FD0 /* clip.swift */,
+				DDD6C9321A40F74D00EA4FD0 /* tile.swift */,
+				DDD6C9341A40F77100EA4FD0 /* geojsonvt.swift */,
 				DDD6C90F1A3F9EF600EA4FD0 /* Supporting Files */,
 			);
 			path = geojsonvt;
@@ -65,6 +76,7 @@
 			isa = PBXGroup;
 			children = (
 				DDD6C9101A3F9EF600EA4FD0 /* Info.plist */,
+				DDD6C92E1A40F70400EA4FD0 /* threestates.geojson */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -137,6 +149,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DDD6C92F1A40F70400EA4FD0 /* threestates.geojson in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -148,8 +161,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				DDD6C9291A3F9F1600EA4FD0 /* convert.swift in Sources */,
+				DDD6C9311A40F73700EA4FD0 /* clip.swift in Sources */,
 				DDD6C92B1A3F9F4E00EA4FD0 /* types.swift in Sources */,
+				DDD6C9331A40F74D00EA4FD0 /* tile.swift in Sources */,
 				DDD6C92D1A3FA03D00EA4FD0 /* simplify.swift in Sources */,
+				DDD6C9351A40F77100EA4FD0 /* geojsonvt.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
