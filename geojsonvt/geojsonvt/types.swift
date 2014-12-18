@@ -2,8 +2,8 @@ import Foundation
 
 class LonLat {
 
-    let lon: Double
-    let lat: Double
+    let lon: Double = 0
+    let lat: Double = 0
 
     init(coordinates: [Double]) {
         self.lon = coordinates[0]
@@ -18,9 +18,9 @@ class ProjectedGeometry {
 
 class ProjectedPoint: ProjectedGeometry {
 
-    var x: Double
-    var y: Double
-    var z: Double
+    var x: Double = -1
+    var y: Double = -1
+    var z: Double = -1
 
     init(x: Double = -1, y: Double = -1, z: Double = -1) {
         self.x = x
@@ -40,7 +40,7 @@ class ProjectedPoint: ProjectedGeometry {
 
 class ProjectedGeometryContainer: ProjectedGeometry {
 
-    var members: [ProjectedGeometry]
+    var members = [ProjectedGeometry]()
     var isPolyline = false
     var area: Double = 0
     var dist: Double = 0
@@ -59,11 +59,11 @@ enum ProjectedFeatureType: Int {
 
 class ProjectedFeature {
 
-    let geometry: ProjectedGeometry
+    let geometry = ProjectedGeometry()
     let type: ProjectedFeatureType
-    let tags: Tags
-    let minPoint: ProjectedPoint
-    let maxPoint: ProjectedPoint
+    let tags = Tags()
+    let minPoint = ProjectedPoint()
+    let maxPoint = ProjectedPoint()
 
     init(geometry: ProjectedGeometry, type: ProjectedFeatureType, tags: Tags) {
         self.geometry = geometry
@@ -80,8 +80,8 @@ class TileGeometry {
 
 class TilePoint: TileGeometry {
 
-    var x: Int
-    var y: Int
+    let x: Int = 0
+    let y: Int = 0
 
     init(x: Int, y: Int) {
         self.x = x
@@ -92,7 +92,7 @@ class TilePoint: TileGeometry {
 
 class TileRing: TileGeometry {
 
-    var points: [TilePoint]
+    var points = [TilePoint]()
 
     init(points: [TilePoint] = []) {
         self.points = points
@@ -106,9 +106,9 @@ typealias Tags = Dictionary<String, String>
 
 class TileFeature {
 
-    let geometry: [TileGeometry]
+    let geometry = [TileGeometry]()
     let type: TileFeatureType
-    let tags: Tags
+    let tags = Tags()
 
     init(geometry: [TileGeometry], type: TileFeatureType, tags: Tags) {
         self.geometry = geometry

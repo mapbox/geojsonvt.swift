@@ -106,7 +106,7 @@ class GeoJSONVT {
             }
 
             if (self.debug) {
-                Util.time("clippling")
+                Util.time("clipping")
             }
 
             let k1 = 0.5 * Double(padding)
