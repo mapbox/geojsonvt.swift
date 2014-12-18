@@ -67,6 +67,7 @@ class Convert {
             }
 
             let geometry = Convert.project(lonlats: points, tolerance: tolerance)
+            geometry.isPolyline = true
 
             features.append(Convert.create(tags: tags, type: ProjectedFeatureType.LineString, geometry: geometry))
 
@@ -80,6 +81,7 @@ class Convert {
                     points.append(LonLat(coordinates: coordinatePair))
                 }
                 let ring = Convert.project(lonlats: points, tolerance: tolerance)
+                ring.isPolyline = true
                 rings.members.append(ring)
             }
 
@@ -88,6 +90,7 @@ class Convert {
                 ProjectedFeatureType.LineString)
 
             let geometry = rings
+            geometry.isPolyline = true
 
             features.append(Convert.create(tags: tags, type: projectedType, geometry: geometry))
 
@@ -102,11 +105,13 @@ class Convert {
                         points.append(LonLat(coordinates: coordinatePair))
                     }
                     let ring = Convert.project(lonlats: points, tolerance: tolerance)
+                    ring.isPolyline = true
                     rings.members.append(ring)
                 }
             }
 
             let geometry = rings
+            rings.isPolyline = true
 
             features.append(Convert.create(tags: tags, type: ProjectedFeatureType.Polygon, geometry: geometry))
 
