@@ -39,8 +39,17 @@ class Simplify {
                 stack.append(last)
             }
 
-            last = stack.removeLast()
-            first = stack.removeLast()
+            if (stack.count > 0) {
+                last = stack.removeLast()
+            } else {
+                last = 0
+            }
+
+            if (stack.count > 0) {
+                first = stack.removeLast()
+            } else {
+                first = 0
+            }
         }
     }
 

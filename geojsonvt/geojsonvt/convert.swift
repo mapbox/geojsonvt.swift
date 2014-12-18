@@ -137,7 +137,7 @@ class Convert {
     class func project(#lonlats: [LonLat], tolerance: Double = 0) -> ProjectedGeometryContainer {
 
         var projected = ProjectedGeometryContainer()
-        for i in 0...lonlats.count {
+        for i in 0..<lonlats.count {
             projected.members.append(Convert.projectPoint(lonlats[i]))
         }
         if (tolerance > 0) {
@@ -164,7 +164,7 @@ class Convert {
         var a = ProjectedPoint()
         var b = ProjectedPoint()
 
-        for i in 0...geometryContainer.members.count {
+        for i in 0..<geometryContainer.members.count {
             a = (b.isValid() ? b : geometryContainer.members[i] as ProjectedPoint)
             b = geometryContainer.members[i + 1] as ProjectedPoint
 

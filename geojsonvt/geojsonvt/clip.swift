@@ -10,7 +10,7 @@ class Clip {
 
         var clipped = [ProjectedFeature]()
 
-        for i in 0...features.count {
+        for i in 0..<features.count {
 
             let feature = features[i]
             let geometry = feature.geometry
@@ -51,7 +51,7 @@ class Clip {
 
         var slice = ProjectedGeometryContainer()
 
-        for i in 0...geometry.members.count {
+        for i in 0..<geometry.members.count {
             let a = geometry.members[i] as ProjectedPoint
             let ak = (axis == 0 ? a.x : a.y)
 
@@ -68,7 +68,7 @@ class Clip {
 
         var slices = ProjectedGeometryContainer()
 
-        for i in 0...geometry.members.count {
+        for i in 0..<geometry.members.count {
 
             var ak: Double = 0
             var bk: Double = 0

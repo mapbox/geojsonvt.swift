@@ -17,7 +17,7 @@ class Tile {
 
         var tile = Tile()
 
-        for i in 0...features.count {
+        for i in 0..<features.count {
             tile.numFeatures++
             Tile.addFeature(tile: tile, feature: features[i], z2: z2, tx: tx, ty: ty, tolerance: tolerance,
                 extent: extent, noSimplify: noSimplify)
@@ -36,14 +36,14 @@ class Tile {
         var ring: ProjectedGeometryContainer
 
         if (type == .Point) {
-            for i in 0...geom.members.count {
+            for i in 0..<geom.members.count {
                 let p = geom.members[i] as ProjectedPoint
                 transformed.append(Tile.transformPoint(p, z2: z2, tx: tx, ty: ty, extent: extent))
                 tile.numPoints++
                 tile.numSimplified++
             }
         } else {
-            for i in 0...geom.members.count {
+            for i in 0..<geom.members.count {
                 ring = geom.members[i] as ProjectedGeometryContainer
 
                 if (!noSimplify && ((type == .LineString && ring.dist < tolerance) ||
@@ -54,7 +54,7 @@ class Tile {
 
                 var transformedRing = TileRing()
 
-                for j in 0...ring.members.count {
+                for j in 0..<ring.members.count {
                     let p = ring.members[j] as ProjectedPoint
                     if (noSimplify || p.z > Double(sqTolerance)) {
                         let transformedPoint = Tile.transformPoint(p, z2: z2, tx: tx, ty: ty, extent: extent)
