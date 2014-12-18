@@ -71,7 +71,6 @@ class ProjectedFeature {
         self.tags = tags
         self.minPoint = ProjectedPoint(x: 1, y: 1, z: 0)
         self.maxPoint = ProjectedPoint(x: 0, y: 0, z: 0)
-        Convert.calcBBox(feature: self)
     }
 }
 
