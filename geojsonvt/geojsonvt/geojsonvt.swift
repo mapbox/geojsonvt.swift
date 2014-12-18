@@ -86,7 +86,7 @@ class GeoJSONVT {
                     if (self.stats.count - 1 >= z) {
                         self.stats[z] += 1
                     } else {
-                        self.stats[z] = 1
+                        self.stats.insert(1, atIndex: z)
                     }
                     self.total++
                 }
