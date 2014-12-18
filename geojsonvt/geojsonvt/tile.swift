@@ -19,14 +19,14 @@ class Tile {
 
         for i in 0..<features.count {
             tile.numFeatures++
-            Tile.addFeature(tile: tile, feature: features[i], z2: z2, tx: tx, ty: ty, tolerance: tolerance,
+            Tile.addFeature(tile: &tile, feature: features[i], z2: z2, tx: tx, ty: ty, tolerance: tolerance,
                 extent: extent, noSimplify: noSimplify)
         }
 
         return tile
     }
 
-    class func addFeature(var #tile: Tile, feature: ProjectedFeature, z2: Int, tx: Int, ty: Int,
+    class func addFeature(inout #tile: Tile, feature: ProjectedFeature, z2: Int, tx: Int, ty: Int,
         tolerance: Double, extent: Double, noSimplify: Bool) {
 
         let geom = feature.geometry as ProjectedGeometryContainer

@@ -20,18 +20,18 @@ class Convert {
 
         if ((data["type"] as String) == "FeatureCollection") {
             for i in 0..<(data["features"] as [JSON]).count {
-                Convert.convertFeature(features: features, feature: (data["features"] as [JSON])[i], tolerance: tolerance)
+                Convert.convertFeature(features: &features, feature: (data["features"] as [JSON])[i], tolerance: tolerance)
             }
         } else if (data["type"] as String == "Feature") {
-            convertFeature(features: features, feature: data as JSON, tolerance: tolerance)
+            convertFeature(features: &features, feature: data as JSON, tolerance: tolerance)
         } else {
-            convertFeature(features: features, feature: ["geometry": data], tolerance: tolerance)
+            convertFeature(features: &features, feature: ["geometry": data], tolerance: tolerance)
         }
 
         return features
     }
 
-    class func convertFeature(var #features: [ProjectedFeature], feature: JSON, tolerance: Double) {
+    class func convertFeature(inout #features: [ProjectedFeature], feature: JSON, tolerance: Double) {
 
         let geom = feature["geometry"] as JSON
         let type = geom["type"] as String
@@ -119,7 +119,7 @@ class Convert {
 
             let geometries = geom["geometries"] as [JSON]
             for geometry in geometries {
-                Convert.convertFeature(features: features, feature: geometry, tolerance: tolerance)
+                Convert.convertFeature(features: &features, feature: geometry, tolerance: tolerance)
             }
 
         } else {
@@ -133,7 +133,7 @@ class Convert {
     class func create(#tags: Tags, type: ProjectedFeatureType, geometry: ProjectedGeometry) -> ProjectedFeature {
 
         var feature = ProjectedFeature(geometry: geometry, type: type, tags: tags)
-        Convert.calcBBox(feature: feature)
+        Convert.calcBBox(feature: &feature)
 
         return feature
     }
@@ -146,7 +146,7 @@ class Convert {
         }
         if (tolerance > 0) {
             Simplify.simplify(points: projected, tolerance: tolerance)
-            Convert.calcSize(geometryContainer: projected)
+            Convert.calcSize(geometryContainer: &projected)
         }
 
         return projected
@@ -161,7 +161,7 @@ class Convert {
         return ProjectedPoint(x: x, y: y, z: 0)
     }
 
-    class func calcSize(var #geometryContainer: ProjectedGeometryContainer) {
+    class func calcSize(inout #geometryContainer: ProjectedGeometryContainer) {
 
         var area: Double = 0
         var dist: Double = 0
@@ -180,23 +180,23 @@ class Convert {
         geometryContainer.dist = dist
     }
 
-    class func calcBBox(var #feature: ProjectedFeature) {
+    class func calcBBox(inout #feature: ProjectedFeature) {
 
         let geometry = feature.geometry
-        let minPoint = feature.minPoint
-        let maxPoint = feature.maxPoint
+        var minPoint = feature.minPoint
+        var maxPoint = feature.maxPoint
 
         if (feature.type == ProjectedFeatureType.Point) {
-            Convert.calcRingBBox(minPoint: minPoint, maxPoint: maxPoint, geometry: geometry as ProjectedPoint)
+            Convert.calcRingBBox(minPoint: &minPoint, maxPoint: &maxPoint, geometry: geometry as ProjectedPoint)
         } else {
             for i in 0..<(geometry as ProjectedGeometryContainer).members.count {
                 let featureGeometry = (geometry as ProjectedGeometryContainer).members[i] as ProjectedGeometryContainer
-                Convert.calcRingBBox(minPoint: minPoint, maxPoint: maxPoint, geometry: featureGeometry)
+                Convert.calcRingBBox(minPoint: &minPoint, maxPoint: &maxPoint, geometry: featureGeometry)
             }
         }
     }
 
-    class func calcRingBBox(var #minPoint: ProjectedPoint, var maxPoint: ProjectedPoint, geometry: ProjectedPoint) {
+    class func calcRingBBox(inout #minPoint: ProjectedPoint, inout maxPoint: ProjectedPoint, geometry: ProjectedPoint) {
 
         let p = geometry
         minPoint.x = min(p.x, minPoint.x)
@@ -206,14 +206,11 @@ class Convert {
     }
 
 
-    class func calcRingBBox(var #minPoint: ProjectedPoint, var maxPoint: ProjectedPoint, geometry: ProjectedGeometryContainer) {
+    class func calcRingBBox(inout #minPoint: ProjectedPoint, inout maxPoint: ProjectedPoint, geometry: ProjectedGeometryContainer) {
 
         for i in 0..<geometry.members.count {
             let p = geometry.members[i] as ProjectedPoint
-            minPoint.x = min(p.x, minPoint.x)
-            maxPoint.x = max(p.x, maxPoint.x)
-            minPoint.y = min(p.y, minPoint.y)
-            maxPoint.y = max(p.y, maxPoint.y)
+            Convert.calcRingBBox(minPoint: &minPoint, maxPoint: &maxPoint, geometry: p)
         }
     }
     

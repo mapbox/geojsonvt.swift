@@ -92,7 +92,7 @@ class Clip {
                         slice.members.append(intersect(a, b, k1))
                         slice.members.append(intersect(a, b, k2))
                         if (!closed) {
-                            slice = newSlice(slices: slices, slice: slice, area: area, dist: dist)
+                            slice = newSlice(slices: &slices, slice: slice, area: area, dist: dist)
                         }
                     } else if (bk <= k2) {
                         slice.members.append(intersect(a, b, k2))
@@ -103,12 +103,12 @@ class Clip {
                     if (bk < k1) {
                         slice.members.append(intersect(a, b, k1))
                         if (!closed) {
-                            slice = newSlice(slices: slices, slice: slice, area: area, dist: dist)
+                            slice = newSlice(slices: &slices, slice: slice, area: area, dist: dist)
                         }
                     } else if (bk > k2) {
                         slice.members.append(intersect(a, b, k2))
                         if (!closed) {
-                            slice = newSlice(slices: slices, slice: slice, area: area, dist: dist)
+                            slice = newSlice(slices: &slices, slice: slice, area: area, dist: dist)
                         }
                     }
                 }
@@ -126,13 +126,13 @@ class Clip {
                 slice.members.append(first)
             }
 
-            newSlice(slices: slices, slice: slice, area: area, dist: dist)
+            newSlice(slices: &slices, slice: slice, area: area, dist: dist)
         }
 
         return slices
     }
     
-    class func newSlice(var #slices: ProjectedGeometryContainer, var slice: ProjectedGeometryContainer,
+    class func newSlice(inout #slices: ProjectedGeometryContainer, slice: ProjectedGeometryContainer,
         area: Double, dist: Double) -> ProjectedGeometryContainer {
         
         if (slice.members.count > 0) {
