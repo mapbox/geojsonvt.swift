@@ -28,7 +28,7 @@ class GeoJSONVT {
         self.debug = debug
 
         if (self.debug) {
-            // time 'preprocess data'
+            Util.time("preprocess data")
         }
 
         let z2 = 1 << baseZoom
@@ -39,16 +39,16 @@ class GeoJSONVT {
         let features = Convert.convert(data: deserializedData, tolerance: self.tolerance / (Double(z2) * extent))
 
         if (self.debug) {
-            // time end 'preprocess data'
-            // time 'generate tiles up to z' + maxZoom
+            Util.timeEnd("preprocess data")
+            Util.time("generate tiles up to z\(maxZoom)")
         }
 
         self.splitTile(features: features, z: 0, x: 0, y: 0)
 
         if (self.debug) {
-            // log "features: self.tiles[0].numFeatures, points: self.tiles[0].numPoints
-            // time end 'generate tiles up to z' + maxZoom
-            // log "tiles generated: self. total, self.stats
+            NSLog("features: %i, points: %i", self.tiles[0]!.numFeatures, self.tiles[0]!.numPoints)
+            Util.timeEnd("generate tiles up to z\(maxZoom)")
+            NSLog("tiles generated: %i %@", self.total, self.stats)
         }
     }
 
@@ -71,7 +71,7 @@ class GeoJSONVT {
                 tile = self.tiles[id]!
             } else {
                 if (self.debug) {
-                    // time 'creation'
+                    Util.time("creation")
                 }
 
                 tile = Tile.createTile(features: features, z2: z2, tx: x, ty: y, tolerance: tileTolerance,
@@ -80,8 +80,9 @@ class GeoJSONVT {
                 self.tiles[id] = tile
 
                 if (self.debug) {
-                    // log "tile z" + z, x, y + " (features: tile.numFeatures, points: tile.numPoints, simplified: tile.numSimplified)
-                    // time end 'creation'
+                    NSLog("tile z%i-%i-%i (features: %i, points: %i, simplified: %i", z, x, y,
+                        tile.numFeatures, tile.numPoints, tile.numSimplified)
+                    Util.timeEnd("creation")
 
                     if (self.stats.count - 1 >= z) {
                         self.stats[z] += 1
@@ -105,7 +106,7 @@ class GeoJSONVT {
             }
 
             if (self.debug) {
-                // time 'clipping'
+                Util.time("clippling")
             }
 
             let k1 = 0.5 * Double(padding)
@@ -152,7 +153,7 @@ class GeoJSONVT {
             }
 
             if (self.debug) {
-                // time end 'clipping'
+                Util.timeEnd("clipping")
             }
 
             if (tl.count > 0) {
@@ -193,7 +194,7 @@ class GeoJSONVT {
         }
 
         if (self.debug) {
-            // log 'drilling down to z%d-%d-%d', z, x, y
+            NSLog("drilling down to z%i-%i-%i", z, x, y)
         }
 
         var z0 = z
@@ -210,7 +211,7 @@ class GeoJSONVT {
         }
 
         if (self.debug) {
-            // log ''found parent tile z%d-%d-%d', z0, x0, y0
+            NSLog("found parent tile z%i-%i-%i", z0, x0, y0)
         }
 
         if (parent!.source.count > 0) {
@@ -219,13 +220,13 @@ class GeoJSONVT {
             }
 
             if (self.debug) {
-                // time 'drilling down'
+                Util.time("drilling down")
             }
 
             self.splitTile(features: parent!.source, z: z0, x: x0, y: y0, cz: z, cx: x, cy: y)
 
             if (self.debug) {
-                // time end 'drilling down
+                Util.timeEnd("drilling down")
             }
         }
 

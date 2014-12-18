@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DD231ACF1A425A4100D6AAF5 /* util.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD231ACE1A425A4100D6AAF5 /* util.swift */; };
 		DDD6C9441A42459000EA4FD0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDD6C9431A42459000EA4FD0 /* AppDelegate.swift */; };
 		DDD6C9461A42459000EA4FD0 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDD6C9451A42459000EA4FD0 /* ViewController.swift */; };
 		DDD6C94B1A42459000EA4FD0 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DDD6C94A1A42459000EA4FD0 /* Images.xcassets */; };
@@ -21,6 +22,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		DD231ACE1A425A4100D6AAF5 /* util.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = util.swift; sourceTree = "<group>"; };
 		DDD6C9281A3F9F1600EA4FD0 /* convert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = convert.swift; sourceTree = "<group>"; };
 		DDD6C92A1A3F9F4E00EA4FD0 /* types.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = types.swift; sourceTree = "<group>"; };
 		DDD6C92C1A3FA03D00EA4FD0 /* simplify.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = simplify.swift; sourceTree = "<group>"; };
@@ -72,6 +74,7 @@
 				DDD6C92C1A3FA03D00EA4FD0 /* simplify.swift */,
 				DDD6C9321A40F74D00EA4FD0 /* tile.swift */,
 				DDD6C9301A40F73700EA4FD0 /* clip.swift */,
+				DD231ACE1A425A4100D6AAF5 /* util.swift */,
 			);
 			name = lib;
 			sourceTree = "<group>";
@@ -179,6 +182,7 @@
 				DDD6C9461A42459000EA4FD0 /* ViewController.swift in Sources */,
 				DDD6C9441A42459000EA4FD0 /* AppDelegate.swift in Sources */,
 				DDD6C9641A42470200EA4FD0 /* simplify.swift in Sources */,
+				DD231ACF1A425A4100D6AAF5 /* util.swift in Sources */,
 				DDD6C9631A42470200EA4FD0 /* convert.swift in Sources */,
 				DDD6C9611A4246FD00EA4FD0 /* geojsonvt.swift in Sources */,
 				DDD6C9661A42470200EA4FD0 /* clip.swift in Sources */,
