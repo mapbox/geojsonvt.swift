@@ -19,7 +19,7 @@ class Convert {
         var features = [ProjectedFeature]()
 
         if ((data["type"] as String) == "FeatureCollection") {
-            for i in 0...(data["features"] as [JSON]).count {
+            for i in 0..<(data["features"] as [JSON]).count {
                 Convert.convertFeature(features: features, feature: (data["features"] as [JSON])[i], tolerance: tolerance)
             }
         } else if (data["type"] as String == "Feature") {
