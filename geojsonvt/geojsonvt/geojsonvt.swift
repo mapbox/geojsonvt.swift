@@ -34,7 +34,7 @@ class GeoJSONVT {
         let z2 = 1 << baseZoom
 
         let deserializedData = NSJSONSerialization.JSONObjectWithData(data.dataUsingEncoding(NSUTF8StringEncoding,
-            allowLossyConversion: false)!, options: nil, error: nil) as Dictionary<String, AnyObject>
+            allowLossyConversion: false)!, options: nil, error: nil) as JSON
 
         let features = Convert.convert(data: deserializedData, tolerance: self.tolerance / (Double(z2) * extent))
 

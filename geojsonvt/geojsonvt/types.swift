@@ -61,11 +61,11 @@ class ProjectedFeature {
 
     let geometry: ProjectedGeometry
     let type: ProjectedFeatureType
-    let tags: [String]
+    let tags: Tags
     let minPoint: ProjectedPoint
     let maxPoint: ProjectedPoint
 
-    init(geometry: ProjectedGeometry, type: ProjectedFeatureType, tags: [String]) {
+    init(geometry: ProjectedGeometry, type: ProjectedFeatureType, tags: Tags) {
         self.geometry = geometry
         self.type = type
         self.tags = tags
@@ -103,13 +103,15 @@ class TileRing: TileGeometry {
 
 typealias TileFeatureType = ProjectedFeatureType
 
+typealias Tags = Dictionary<String, String>
+
 class TileFeature {
 
     let geometry: [TileGeometry]
     let type: TileFeatureType
-    let tags: [String]
+    let tags: Tags
 
-    init(geometry: [TileGeometry], type: TileFeatureType, tags: [String]) {
+    init(geometry: [TileGeometry], type: TileFeatureType, tags: Tags) {
         self.geometry = geometry
         self.type = type
         self.tags = tags
