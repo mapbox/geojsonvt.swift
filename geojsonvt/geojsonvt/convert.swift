@@ -163,7 +163,7 @@ class Convert {
         var a = ProjectedPoint()
         var b = ProjectedPoint()
 
-        for i in 0..<geometryContainer.members.count {
+        for i in 0..<(geometryContainer.members.count - 1) {
             a = (b.isValid() ? b : geometryContainer.members[i] as ProjectedPoint)
             b = geometryContainer.members[i + 1] as ProjectedPoint
 
@@ -203,7 +203,7 @@ class Convert {
 
     class func calcRingBBox(var #minPoint: ProjectedPoint, var maxPoint: ProjectedPoint, geometry: ProjectedGeometryContainer) {
 
-        for i in 0...geometry.members.count {
+        for i in 0..<geometry.members.count {
             let p = geometry.members[i] as ProjectedPoint
             minPoint.x = min(p.x, minPoint.x)
             maxPoint.x = max(p.x, maxPoint.x)
