@@ -184,7 +184,7 @@ class Convert {
         if (feature.type == ProjectedFeatureType.Point) {
             Convert.calcRingBBox(minPoint: minPoint, maxPoint: maxPoint, geometry: geometry as ProjectedPoint)
         } else {
-            for i in 0...(geometry as ProjectedGeometryContainer).members.count {
+            for i in 0..<(geometry as ProjectedGeometryContainer).members.count {
                 let featureGeometry = (geometry as ProjectedGeometryContainer).members[i] as ProjectedGeometryContainer
                 Convert.calcRingBBox(minPoint: minPoint, maxPoint: maxPoint, geometry: featureGeometry)
             }
