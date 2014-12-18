@@ -1,17 +1,14 @@
 import Foundation
 
-let extent: Double = 4096
-let padding = 8 / 512
-let minPx = Int(round(-Double(padding) * extent))
-let maxPx = Int(round(Double(1 + padding) * extent))
-
 class GeoJSONVT {
 
     var baseZoom: Int
     var maxZoom: Int
     var maxPoints: Int
     var tolerance: Double
-    var debug: Bool
+    var extent: Double = 4096
+    var buffer: Double = 64
+    var debug: Bool = false
 
     var tiles = [Int: Tile]()
 
@@ -36,7 +33,7 @@ class GeoJSONVT {
         let deserializedData = NSJSONSerialization.JSONObjectWithData(data.dataUsingEncoding(NSUTF8StringEncoding,
             allowLossyConversion: false)!, options: nil, error: nil) as JSON
 
-        let features = Convert.convert(data: deserializedData, tolerance: self.tolerance / (Double(z2) * extent))
+        let features = Convert.convert(data: deserializedData, tolerance: self.tolerance / (Double(z2) * self.extent))
 
         if (self.debug) {
             Util.timeEnd("preprocess data")
@@ -94,7 +91,7 @@ class GeoJSONVT {
             }
 
             if (cz == 0 && (z == self.maxZoom || tile.numPoints <= self.maxPoints ||
-                self.isClippedSquare(features: tile.features)) || z == self.baseZoom || z == cz) {
+                self.isClippedSquare(features: tile.features, extent: self.extent, buffer: self.buffer)) || z == self.baseZoom || z == cz) {
                     tile.source = features
                     continue
             }
@@ -109,7 +106,7 @@ class GeoJSONVT {
                 Util.time("clipping")
             }
 
-            let k1 = 0.5 * Double(padding)
+            let k1 = 0.5 * self.buffer / self.extent
             let k2 = 0.5 - k1
             let k3 = 0.5 + k1
             let k4 = 1 + k1
@@ -215,7 +212,7 @@ class GeoJSONVT {
         }
 
         if (parent!.source.count > 0) {
-            if (self.isClippedSquare(features: parent!.features)) {
+            if (self.isClippedSquare(features: parent!.features, extent: self.extent, buffer: self.buffer)) {
                 return parent!
             }
 
@@ -233,7 +230,7 @@ class GeoJSONVT {
         return self.tiles[id]!
     }
 
-    func isClippedSquare(#features: [TileFeature]) -> Bool {
+    func isClippedSquare(#features: [TileFeature], extent: Double, buffer: Double) -> Bool {
 
         if (features.count != 1) {
             return false
@@ -247,8 +244,8 @@ class GeoJSONVT {
 
         for i in 0...(feature.geometry.first! as TileRing).points.count {
             let p = (feature.geometry.first! as TileRing).points[i] as TilePoint
-            if ((p.x != minPx && p.x != maxPx) ||
-                (p.y != minPx && p.y != maxPx)) {
+            if ((Double(p.x) != -self.buffer && Double(p.x) != self.extent + self.buffer) ||
+                (Double(p.y) != -self.buffer && Double(p.y) != self.extent + self.buffer)) {
                     return false
             }
         }
