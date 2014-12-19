@@ -37,36 +37,43 @@ class ViewController: UIViewController {
         CGContextFillRect(c, CGRect(x: 0, y: 0, width: size, height: size))
 
         let tile = self.vt.getTile(self.z, x: self.x, y: self.y)
-        let extent: Double = 4096
-        for feature in tile.features {
-            for geometry in feature.geometry {
-                var pointCount = 0
-                let ring = geometry as TileRing
-                for point in ring.points {
-                    let x = CGFloat((Double(point.x) / extent) * Double(size))
-                    let y = CGFloat((Double(point.y) / extent) * Double(size))
-                    if (pointCount == 0) {
-                        CGContextMoveToPoint(c, x, y)
-                    } else {
-                        CGContextAddLineToPoint(c, x, y)
+
+        if (tile != nil) {
+            let extent: Double = 4096
+            for feature in tile!.features {
+                for geometry in feature.geometry {
+                    var pointCount = 0
+                    let ring = geometry as TileRing
+                    for point in ring.points {
+                        let x = CGFloat((Double(point.x) / extent) * Double(size))
+                        let y = CGFloat((Double(point.y) / extent) * Double(size))
+                        if (pointCount == 0) {
+                            CGContextMoveToPoint(c, x, y)
+                        } else {
+                            CGContextAddLineToPoint(c, x, y)
+                        }
+                        pointCount++
                     }
-                    pointCount++
+                    CGContextStrokePath(c)
                 }
-                CGContextStrokePath(c)
             }
+
+            CGContextSetStrokeColorWithColor(c, UIColor.greenColor().CGColor)
+            CGContextSetLineWidth(c, 1)
+            CGContextStrokeRect(c, CGRect(x: 0, y: 0, width: size, height: size))
+            CGContextMoveToPoint(c, size / 2, 0)
+            CGContextAddLineToPoint(c, size / 2, size)
+            CGContextMoveToPoint(c, 0, size / 2)
+            CGContextAddLineToPoint(c, size, size / 2)
+            CGContextStrokePath(c)
+
+            self.imageView.image = UIGraphicsGetImageFromCurrentImageContext()
+            UIGraphicsEndImageContext()
+        } else {
+            self.z--
+            self.x = x / 2
+            self.y = y / 2
         }
-
-        CGContextSetStrokeColorWithColor(c, UIColor.greenColor().CGColor)
-        CGContextSetLineWidth(c, 1)
-        CGContextStrokeRect(c, CGRect(x: 0, y: 0, width: size, height: size))
-        CGContextMoveToPoint(c, size / 2, 0)
-        CGContextAddLineToPoint(c, size / 2, size)
-        CGContextMoveToPoint(c, 0, size / 2)
-        CGContextAddLineToPoint(c, size, size / 2)
-        CGContextStrokePath(c)
-
-        self.imageView.image = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
     }
 
     func tap(gesture: UITapGestureRecognizer) {
