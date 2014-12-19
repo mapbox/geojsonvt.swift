@@ -127,13 +127,16 @@ class Clip {
             a = points.members[len - 1] as ProjectedPoint
             ak = (axis == 0 ? a.x : a.y)
 
-            let sliceLen = slice.members.count
+            if (ak >= k1 && ak <= k2) {
+                slice.members.append(a)
+            }
 
-            let first = slice.members[0] as ProjectedPoint
-            let last  = slice.members[sliceLen - 1] as ProjectedPoint
-
-            if (closed && !first.isEqualToPoint(last)) {
-                slice.members.append(first)
+            if (closed && slice.members.count > 0) {
+                let first = slice.members[0] as ProjectedPoint
+                let last  = slice.members[slice.members.count - 1] as ProjectedPoint
+                if (!first.isEqualToPoint(last)) {
+                    slice.members.append(ProjectedPoint(x: first.x, y: first.y, z: first.z))
+                }
             }
 
             newSlice(slices: &slices, slice: slice, area: area, dist: dist)
