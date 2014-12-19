@@ -77,8 +77,8 @@ class ViewController: UIViewController {
     }
 
     func tap(gesture: UITapGestureRecognizer) {
-        let left = (gesture.locationInView(gesture.view).x / self.view.bounds.size.width  < 0.5)
-        let top  = (gesture.locationInView(gesture.view).y / self.view.bounds.size.height < 0.5)
+        let left = (gesture.locationInView(gesture.view).x / self.view.bounds.size.width < 0.5)
+        let top  = (gesture.locationInView(gesture.view).y / self.view.bounds.size.width < 0.5)
 
         self.z++
         self.x *= 2
