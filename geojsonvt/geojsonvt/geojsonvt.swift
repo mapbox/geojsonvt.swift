@@ -126,19 +126,23 @@ class GeoJSONVT {
             if (cz >= 0) {
                 m = 1 << (cz - z)
                 goLeft = Double(cx) / Double(m) - Double(x) < 0.5
-                goTop = Double(cy) / Double(m) - Double(y) < 0.5
+                goTop  = Double(cy) / Double(m) - Double(y) < 0.5
             }
 
             if (cz < 0 || goLeft) {
                 left = Clip.clip(features: features, scale: z2, k1: Double(x) - k1, k2: Double(x) + k3, axis: 0, intersect: intersectX)
-            } else if (cz < 0 || !goLeft) {
+            }
+
+            if (cz < 0 || !goLeft) {
                 right = Clip.clip(features: features, scale: z2, k1: Double(x) + k2, k2: Double(x) + k4, axis: 0, intersect: intersectX)
             }
 
             if (left.count > 0) {
                 if (cz < 0 || goTop) {
                     tl = Clip.clip(features: left, scale: z2, k1: Double(y) - k1, k2: Double(y) + k3, axis: 1, intersect: intersectY)
-                } else if (cz < 0 || !goTop) {
+                }
+
+                if (cz < 0 || !goTop) {
                     bl = Clip.clip(features: left, scale: z2, k1: Double(y) + k2, k2: Double(y) + k4, axis: 1, intersect: intersectY)
                 }
             }
@@ -146,7 +150,9 @@ class GeoJSONVT {
             if (right.count > 0) {
                 if (cz < 0 || goTop) {
                     tr = Clip.clip(features: right, scale: z2, k1: Double(y) - k1, k2: Double(y) + k3, axis: 1, intersect: intersectY)
-                } else if (cz < 0 || !goTop) {
+                }
+
+                if (cz < 0 || !goTop) {
                     br = Clip.clip(features: right, scale: z2, k1: Double(y) + k2, k2: Double(y) + k4, axis: 1, intersect: intersectY)
                 }
             }
