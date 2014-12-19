@@ -94,6 +94,16 @@ class Clip {
                         if (!closed) {
                             slice = newSlice(slices: &slices, slice: slice, area: area, dist: dist)
                         }
+                    } else if (bk >= k1) {
+                        slice.members.append(intersect(a, b, k1))
+                    }
+                } else if (ak > k2) {
+                    if (bk < k1) {
+                        slice.members.append(intersect(a, b, k2))
+                        slice.members.append(intersect(a, b, k1))
+                        if (!closed) {
+                            slice = newSlice(slices: &slices, slice: slice, area: area, dist: dist)
+                        }
                     } else if (bk <= k2) {
                         slice.members.append(intersect(a, b, k2))
                     }
