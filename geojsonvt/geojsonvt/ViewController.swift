@@ -21,7 +21,12 @@ class ViewController: UIViewController {
 
         self.imageView = UIImageView(frame: CGRect(x: 0, y: (self.view.bounds.size.height - size) / 2, width: size, height: size))
         self.imageView.userInteractionEnabled = true
-        self.imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: "tap:"))
+        self.imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: "singleTap:"))
+        self.imageView.addGestureRecognizer({
+            let gesture = UITapGestureRecognizer(target: self, action: "twoFingerTap:")
+            gesture.numberOfTouchesRequired = 2
+            return gesture
+            }())
         self.view.addSubview(self.imageView)
 
         self.drawTile()
@@ -70,13 +75,29 @@ class ViewController: UIViewController {
             self.imageView.image = UIGraphicsGetImageFromCurrentImageContext()
             UIGraphicsEndImageContext()
         } else {
-            self.z--
-            self.x = x / 2
-            self.y = y / 2
+            self.zoomOut()
         }
     }
 
-    func tap(gesture: UITapGestureRecognizer) {
+    func zoomOut() {
+        self.z--
+        self.x = x / 2
+        self.y = y / 2
+
+        if (z < 0) {
+            z = 0
+        }
+
+        if (x < 0) {
+            x = 0
+        }
+
+        if (y < 0) {
+            y = 0
+        }
+    }
+
+    func singleTap(gesture: UITapGestureRecognizer) {
         let left = (gesture.locationInView(gesture.view).x / self.view.bounds.size.width < 0.5)
         let top  = (gesture.locationInView(gesture.view).y / self.view.bounds.size.width < 0.5)
 
@@ -90,6 +111,11 @@ class ViewController: UIViewController {
             self.y++
         }
 
+        self.drawTile()
+    }
+
+    func twoFingerTap(gesture: UITapGestureRecognizer) {
+        self.zoomOut()
         self.drawTile()
     }
 
