@@ -191,7 +191,7 @@ class GeoJSONVT {
         }
     }
 
-    func getTile(z: Int, x: Int, y: Int) -> Tile {
+    func getTile(z: Int, x: Int, y: Int) -> Tile? {
 
         let id = self.toID(z: z, x: x, y: y)
         if (self.tiles.indexForKey(id) != nil) {
@@ -235,7 +235,7 @@ class GeoJSONVT {
             }
         }
 
-        return self.tiles[id]!
+        return (self.tiles.indexForKey(id) != nil ? self.tiles[id] : nil)
     }
 
     func isClippedSquare(#features: [TileFeature], extent: Double, buffer: Double) -> Bool {
