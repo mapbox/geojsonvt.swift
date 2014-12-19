@@ -284,12 +284,4 @@ class GeoJSONVT {
         return ProjectedPoint(x: r1, y: r2, z: r3);
     }
     
-    func extend(var #dest: [ProjectedPoint], src: [ProjectedPoint]) -> [ProjectedPoint] {
-
-        for i in 0..<src.count {
-            dest[i] = src[i]
-        }
-        return dest
-    }
-    
 }
