@@ -81,7 +81,7 @@ class Clip {
 
             var slice = ProjectedGeometryContainer()
 
-            for j in 0...(len - 1) {
+            for j in 0..<(len - 1) {
                 a = (b.isValid() ? b : points.members[j] as ProjectedPoint)
                 b = points.members[j + 1] as ProjectedPoint
                 ak = (bk > 0 ? bk : (axis == 0 ? a.x : a.y))
