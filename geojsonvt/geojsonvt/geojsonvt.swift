@@ -12,7 +12,7 @@ class GeoJSONVT {
 
     var tiles = [Int: Tile]()
 
-    var stats = [Int]()
+    var stats = [String: Int]()
 
     var total = 0
 
@@ -81,10 +81,12 @@ class GeoJSONVT {
                         tile.numFeatures, tile.numPoints, tile.numSimplified)
                     Util.timeEnd("creation")
 
+                    let key = "z\(z):"
                     if (self.stats.count - 1 >= z) {
-                        self.stats[z] += 1
+                        var value = self.stats[key]! + 1
+                        self.stats[key] = value
                     } else {
-                        self.stats.insert(1, atIndex: z)
+                        self.stats[key] = 1
                     }
                     self.total++
                 }
