@@ -269,13 +269,7 @@ class GeoJSONVT {
     func intersectX(a: ProjectedPoint, b: ProjectedPoint, x: Double) -> ProjectedPoint {
 
         let r1 = x
-        let r2: Double = {
-            let e1 = x - a.x
-            let e2 = b.y - a.y
-            let e3 = b.x - a.x
-            let e4 = a.y
-            return e1 * e2 / e3 + e4
-            }()
+        let r2 = (x - a.x) * (b.y - a.y) / (b.x - a.x) + a.y
         let r3: Double = 1
 
         return ProjectedPoint(x: r1, y: r2, z: r3);
@@ -283,13 +277,7 @@ class GeoJSONVT {
     
     func intersectY(a: ProjectedPoint, b: ProjectedPoint, y: Double) -> ProjectedPoint {
 
-        let r1: Double = {
-            let e1 = y - a.y
-            let e2 = b.x - a.x
-            let e3 = b.y - a.y
-            let e4 = a.x
-            return e1 * e2 / e3 + e4
-            }()
+        let r1 = (y - a.y) * (b.x - a.x) / (b.y - a.y) + a.x
         let r2 = y
         let r3: Double = 1
         
