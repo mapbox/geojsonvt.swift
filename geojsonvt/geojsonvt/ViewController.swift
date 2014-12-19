@@ -41,26 +41,38 @@ class ViewController: UIViewController {
         CGContextSetFillColorWithColor(c, UIColor.whiteColor().CGColor)
         CGContextFillRect(c, CGRect(x: 0, y: 0, width: size, height: size))
 
+        CGContextSetStrokeColorWithColor(c, UIColor.redColor().CGColor)
+        CGContextSetFillColorWithColor(c, UIColor.redColor().colorWithAlphaComponent(0.05).CGColor)
+
         let tile = self.vt.getTile(self.z, x: self.x, y: self.y)
 
         if (tile != nil) {
             let extent: Double = 4096
             for feature in tile!.features {
                 for geometry in feature.geometry {
-                    var pointCount = 0
-                    let ring = geometry as TileRing
-                    for point in ring.points {
-                        let x = CGFloat((Double(point.x) / extent) * Double(size))
-                        let y = CGFloat((Double(point.y) / extent) * Double(size))
-                        if (pointCount == 0) {
-                            CGContextMoveToPoint(c, x, y)
-                        } else {
-                            CGContextAddLineToPoint(c, x, y)
+                    if (feature.type == .Point) {
+                        //
+                    } else {
+                        var pointCount = 0
+                        let ring = geometry as TileRing
+                        for point in ring.points {
+                            let x = CGFloat((Double(point.x) / extent) * Double(size))
+                            let y = CGFloat((Double(point.y) / extent) * Double(size))
+                            if (pointCount == 0) {
+                                CGContextMoveToPoint(c, x, y)
+                            } else {
+                                CGContextAddLineToPoint(c, x, y)
+                            }
+                            pointCount++
                         }
-                        pointCount++
                     }
-                    CGContextStrokePath(c)
                 }
+                if (feature.type == .Polygon) {
+                    let p = CGContextCopyPath(c)
+                    CGContextEOFillPath(c)
+                    CGContextAddPath(c, p)
+                }
+                CGContextStrokePath(c)
             }
 
             CGContextSetStrokeColorWithColor(c, UIColor.greenColor().CGColor)
