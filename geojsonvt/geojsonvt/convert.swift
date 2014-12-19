@@ -23,7 +23,7 @@ class Convert {
                 Convert.convertFeature(features: &features, feature: (data["features"] as [JSON])[i], tolerance: tolerance)
             }
         } else if (data["type"] as String == "Feature") {
-            convertFeature(features: &features, feature: data as JSON, tolerance: tolerance)
+            convertFeature(features: &features, feature: data, tolerance: tolerance)
         } else {
             convertFeature(features: &features, feature: ["geometry": data], tolerance: tolerance)
         }
@@ -66,8 +66,7 @@ class Convert {
                 points.append(LonLat(coordinates: coordinatePair))
             }
 
-            let geometry = Convert.project(lonlats: points, tolerance: tolerance)
-            geometry.isPolyline = true
+            let geometry = ProjectedGeometryContainer(members: [Convert.project(lonlats: points, tolerance: tolerance)])
 
             features.append(Convert.create(tags: tags, type: ProjectedFeatureType.LineString, geometry: geometry))
 
@@ -81,7 +80,6 @@ class Convert {
                     points.append(LonLat(coordinates: coordinatePair))
                 }
                 let ring = Convert.project(lonlats: points, tolerance: tolerance)
-                ring.isPolyline = true
                 rings.members.append(ring)
             }
 
@@ -90,7 +88,6 @@ class Convert {
                 ProjectedFeatureType.LineString)
 
             let geometry = rings
-            geometry.isPolyline = true
 
             features.append(Convert.create(tags: tags, type: projectedType, geometry: geometry))
 
@@ -105,13 +102,11 @@ class Convert {
                         points.append(LonLat(coordinates: coordinatePair))
                     }
                     let ring = Convert.project(lonlats: points, tolerance: tolerance)
-                    ring.isPolyline = true
                     rings.members.append(ring)
                 }
             }
 
             let geometry = rings
-            rings.isPolyline = true
 
             features.append(Convert.create(tags: tags, type: ProjectedFeatureType.Polygon, geometry: geometry))
 
@@ -187,7 +182,7 @@ class Convert {
         var maxPoint = feature.maxPoint
 
         if (feature.type == ProjectedFeatureType.Point) {
-            Convert.calcRingBBox(minPoint: &minPoint, maxPoint: &maxPoint, geometry: geometry as ProjectedPoint)
+            Convert.calcRingBBox(minPoint: &minPoint, maxPoint: &maxPoint, geometry: geometry as ProjectedGeometryContainer)
         } else {
             for i in 0..<(geometry as ProjectedGeometryContainer).members.count {
                 let featureGeometry = (geometry as ProjectedGeometryContainer).members[i] as ProjectedGeometryContainer
@@ -196,21 +191,14 @@ class Convert {
         }
     }
 
-    class func calcRingBBox(inout #minPoint: ProjectedPoint, inout maxPoint: ProjectedPoint, geometry: ProjectedPoint) {
-
-        let p = geometry
-        minPoint.x = min(p.x, minPoint.x)
-        maxPoint.x = max(p.x, maxPoint.x)
-        minPoint.y = min(p.y, minPoint.y)
-        maxPoint.y = max(p.y, maxPoint.y)
-    }
-
-
     class func calcRingBBox(inout #minPoint: ProjectedPoint, inout maxPoint: ProjectedPoint, geometry: ProjectedGeometryContainer) {
 
         for i in 0..<geometry.members.count {
             let p = geometry.members[i] as ProjectedPoint
-            Convert.calcRingBBox(minPoint: &minPoint, maxPoint: &maxPoint, geometry: p)
+            minPoint.x = min(p.x, minPoint.x)
+            maxPoint.x = max(p.x, maxPoint.x)
+            minPoint.y = min(p.y, minPoint.y)
+            maxPoint.y = max(p.y, maxPoint.y)
         }
     }
     

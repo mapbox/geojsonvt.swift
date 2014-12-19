@@ -41,7 +41,6 @@ class ProjectedPoint: ProjectedGeometry {
 class ProjectedGeometryContainer: ProjectedGeometry {
 
     var members = [ProjectedGeometry]()
-    var isPolyline = false
     var area: Double = 0
     var dist: Double = 0
 
