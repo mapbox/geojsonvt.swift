@@ -252,8 +252,8 @@ class GeoJSONVT {
 
         for i in 0...(feature.geometry.first! as TileRing).points.count {
             let p = (feature.geometry.first! as TileRing).points[i] as TilePoint
-            if ((Double(p.x) != -self.buffer && Double(p.x) != self.extent + self.buffer) ||
-                (Double(p.y) != -self.buffer && Double(p.y) != self.extent + self.buffer)) {
+            if ((Double(p.x) != -buffer && Double(p.x) != extent + buffer) ||
+                (Double(p.y) != -buffer && Double(p.y) != extent + buffer)) {
                     return false
             }
         }

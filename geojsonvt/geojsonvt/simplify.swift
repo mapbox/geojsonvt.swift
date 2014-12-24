@@ -20,7 +20,7 @@ class Simplify {
 
             maxSqDist = 0
 
-            for i in (first + 1)...last {
+            for i in (first + 1)..<last {
                 sqDist = Simplify.getSqSegDist(points.members[i] as ProjectedPoint,
                     a: points.members[first] as ProjectedPoint,
                     b: points.members[last]  as ProjectedPoint)
