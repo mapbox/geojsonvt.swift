@@ -13,9 +13,9 @@ class Convert {
                 Convert.convertFeature(features: &features, feature: (data["features"] as [JSON])[i], tolerance: tolerance)
             }
         } else if (data["type"] as String == "Feature") {
-            convertFeature(features: &features, feature: data, tolerance: tolerance)
+            Convert.convertFeature(features: &features, feature: data, tolerance: tolerance)
         } else {
-            convertFeature(features: &features, feature: ["geometry": data], tolerance: tolerance)
+            Convert.convertFeature(features: &features, feature: ["geometry": data], tolerance: tolerance)
         }
 
         return features

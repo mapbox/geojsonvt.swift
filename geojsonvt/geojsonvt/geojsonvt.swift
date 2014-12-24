@@ -60,7 +60,7 @@ class GeoJSONVT {
             let y = stack.removeAtIndex(0) as Int
 
             let z2 = 1 << z
-            let id = toID(z: z, x: x, y: y)
+            let id = GeoJSONVT.toID(z: z, x: x, y: y)
             var tile: Tile
             let tileTolerance = (z == self.baseZoom ? 0 : self.tolerance / (Double(z2) * self.extent))
 
@@ -130,30 +130,30 @@ class GeoJSONVT {
             }
 
             if (cz < 0 || goLeft) {
-                left = Clip.clip(features: features, scale: z2, k1: Double(x) - k1, k2: Double(x) + k3, axis: 0, intersect: intersectX)
+                left = Clip.clip(features: features, scale: z2, k1: Double(x) - k1, k2: Double(x) + k3, axis: 0, intersect: GeoJSONVT.intersectX)
             }
 
             if (cz < 0 || !goLeft) {
-                right = Clip.clip(features: features, scale: z2, k1: Double(x) + k2, k2: Double(x) + k4, axis: 0, intersect: intersectX)
+                right = Clip.clip(features: features, scale: z2, k1: Double(x) + k2, k2: Double(x) + k4, axis: 0, intersect: GeoJSONVT.intersectX)
             }
 
             if (left.count > 0) {
                 if (cz < 0 || goTop) {
-                    tl = Clip.clip(features: left, scale: z2, k1: Double(y) - k1, k2: Double(y) + k3, axis: 1, intersect: intersectY)
+                    tl = Clip.clip(features: left, scale: z2, k1: Double(y) - k1, k2: Double(y) + k3, axis: 1, intersect: GeoJSONVT.intersectY)
                 }
 
                 if (cz < 0 || !goTop) {
-                    bl = Clip.clip(features: left, scale: z2, k1: Double(y) + k2, k2: Double(y) + k4, axis: 1, intersect: intersectY)
+                    bl = Clip.clip(features: left, scale: z2, k1: Double(y) + k2, k2: Double(y) + k4, axis: 1, intersect: GeoJSONVT.intersectY)
                 }
             }
 
             if (right.count > 0) {
                 if (cz < 0 || goTop) {
-                    tr = Clip.clip(features: right, scale: z2, k1: Double(y) - k1, k2: Double(y) + k3, axis: 1, intersect: intersectY)
+                    tr = Clip.clip(features: right, scale: z2, k1: Double(y) - k1, k2: Double(y) + k3, axis: 1, intersect: GeoJSONVT.intersectY)
                 }
 
                 if (cz < 0 || !goTop) {
-                    br = Clip.clip(features: right, scale: z2, k1: Double(y) + k2, k2: Double(y) + k4, axis: 1, intersect: intersectY)
+                    br = Clip.clip(features: right, scale: z2, k1: Double(y) + k2, k2: Double(y) + k4, axis: 1, intersect: GeoJSONVT.intersectY)
                 }
             }
 
@@ -193,7 +193,7 @@ class GeoJSONVT {
 
     func getTile(z: Int, x: Int, y: Int) -> Tile? {
 
-        let id = self.toID(z: z, x: x, y: y)
+        let id = GeoJSONVT.toID(z: z, x: x, y: y)
         if (self.tiles.indexForKey(id) != nil) {
             return self.tiles[id]!
         }
@@ -211,7 +211,7 @@ class GeoJSONVT {
             z0--
             x0 = Int(floor(Double(x0) / 2))
             y0 = Int(floor(Double(y0) / 2))
-            let checkID = self.toID(z: z0, x: x0, y: y0)
+            let checkID = GeoJSONVT.toID(z: z0, x: x0, y: y0)
             parent = (self.tiles.indexForKey(checkID) != nil ? self.tiles[checkID]! : nil)
         }
 
@@ -261,12 +261,12 @@ class GeoJSONVT {
         return true
     }
 
-    func toID(#z: Int, x: Int, y: Int) -> Int {
+    class func toID(#z: Int, x: Int, y: Int) -> Int {
 
         return (((1 << z) * y + x) * 32) + z;
     }
 
-    func intersectX(a: ProjectedPoint, b: ProjectedPoint, x: Double) -> ProjectedPoint {
+    class func intersectX(a: ProjectedPoint, b: ProjectedPoint, x: Double) -> ProjectedPoint {
 
         let r1 = x
         let r2 = (x - a.x) * (b.y - a.y) / (b.x - a.x) + a.y
@@ -275,7 +275,7 @@ class GeoJSONVT {
         return ProjectedPoint(x: r1, y: r2, z: r3);
     }
     
-    func intersectY(a: ProjectedPoint, b: ProjectedPoint, y: Double) -> ProjectedPoint {
+    class func intersectY(a: ProjectedPoint, b: ProjectedPoint, y: Double) -> ProjectedPoint {
 
         let r1 = (y - a.y) * (b.x - a.x) / (b.y - a.y) + a.x
         let r2 = y
