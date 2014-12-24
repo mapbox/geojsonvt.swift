@@ -44,7 +44,7 @@ class Clip {
             }
         }
 
-        return (clipped.count > 0 ? clipped : [])
+        return clipped
     }
 
     class func clipPoints(#geometry: ProjectedGeometryContainer, k1: Double, k2: Double, axis: Int) -> ProjectedGeometryContainer {
@@ -151,7 +151,7 @@ class Clip {
         if (slice.members.count > 0) {
             slice.area = area
             slice.dist = dist
-            slices.members.append(slice) // FIXME
+            slices.members.append(slice)
         }
         
         return ProjectedGeometryContainer()
