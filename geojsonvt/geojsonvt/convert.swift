@@ -2,16 +2,6 @@ import Foundation
 
 typealias JSON = Dictionary<String, AnyObject>
 
-enum JSONGeometryType: String {
-    case Point = "Point"
-    case MultiPoint = "MultiPoint"
-    case LineString = "LineString"
-    case MultiLineString = "MultiLineString"
-    case Polygon = "Polygon"
-    case MultiPolygon = "MultiPolygon"
-    case GeometryCollection = "GeometryCollection"
-}
-
 class Convert {
 
     class func convert(#data: JSON, tolerance: Double) -> [ProjectedFeature] {
@@ -37,7 +27,7 @@ class Convert {
         let type = geom["type"] as String
         let tags = feature["properties"] as Tags
 
-        if (type == JSONGeometryType.Point.rawValue) {
+        if (type == "Point") {
 
             let coordinates = geom["coordinates"] as [Double]
             let point = Convert.projectPoint(LonLat(coordinates: coordinates))
@@ -46,7 +36,7 @@ class Convert {
 
             features.append(Convert.create(tags: tags, type: ProjectedFeatureType.Point, geometry: geometry))
 
-        } else if (type == JSONGeometryType.MultiPoint.rawValue) {
+        } else if (type == "MultiPoint") {
 
             let coordinatePairs = geom["coordinates"] as [[Double]]
             var points = [LonLat]()
@@ -58,7 +48,7 @@ class Convert {
 
             features.append(Convert.create(tags: tags, type: ProjectedFeatureType.Point, geometry: geometry))
 
-        } else if (type == JSONGeometryType.LineString.rawValue) {
+        } else if (type == "LineString") {
 
             let coordinatePairs = geom["coordinates"] as [[Double]]
             var points = [LonLat]()
@@ -70,7 +60,7 @@ class Convert {
 
             features.append(Convert.create(tags: tags, type: ProjectedFeatureType.LineString, geometry: geometry))
 
-        } else if (type == JSONGeometryType.MultiLineString.rawValue || type == JSONGeometryType.Polygon.rawValue) {
+        } else if (type == "MultiLineString" || type == "Polygon") {
 
             var rings = ProjectedGeometryContainer()
             let lines = geom["coordinates"] as [[[Double]]]
@@ -83,7 +73,7 @@ class Convert {
                 rings.members.append(ring)
             }
 
-            let projectedType = (type == JSONGeometryType.Polygon.rawValue ?
+            let projectedType = (type == "Polygon" ?
                 ProjectedFeatureType.Polygon :
                 ProjectedFeatureType.LineString)
 
@@ -91,7 +81,7 @@ class Convert {
 
             features.append(Convert.create(tags: tags, type: projectedType, geometry: geometry))
 
-        } else if (type == JSONGeometryType.MultiPolygon.rawValue) {
+        } else if (type == "MultiPolygon") {
 
             let rings = ProjectedGeometryContainer()
             let polygons = geom["coordinates"] as [[[[Double]]]]
@@ -110,7 +100,7 @@ class Convert {
 
             features.append(Convert.create(tags: tags, type: ProjectedFeatureType.Polygon, geometry: geometry))
 
-        } else if (type == JSONGeometryType.GeometryCollection.rawValue) {
+        } else if (type == "GeometryCollection") {
 
             let geometries = geom["geometries"] as [JSON]
             for geometry in geometries {
