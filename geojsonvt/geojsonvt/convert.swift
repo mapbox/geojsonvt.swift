@@ -9,6 +9,10 @@ class Convert {
         var features = [ProjectedFeature]()
 
         if ((data["type"] as String) == "FeatureCollection") {
+
+            let count = (data["features"] as [JSON]).count
+            NSLog("there are %i total features to convert", count)
+
             for i in 0..<(data["features"] as [JSON]).count {
                 Convert.convertFeature(features: &features, feature: (data["features"] as [JSON])[i], tolerance: tolerance)
             }
@@ -80,6 +84,8 @@ class Convert {
             let geometry = rings
 
             features.append(Convert.create(tags: tags, type: projectedType, geometry: geometry))
+
+            NSLog("features now has %i items", features.count)
 
         } else if (type == "MultiPolygon") {
 

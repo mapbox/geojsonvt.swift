@@ -14,6 +14,7 @@ class ViewController: UIViewController {
         let json = NSString(contentsOfFile:
             NSBundle.mainBundle().pathForResource("threestates", ofType: "geojson")!,
             encoding: NSUTF8StringEncoding, error: nil)
+        NSLog("loaded up feature JSON of %i bytes", json!.length)
 
         self.vt = GeoJSONVT(data: json!, debug: true)
 

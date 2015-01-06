@@ -48,8 +48,8 @@ class Tile {
 
                 if (!noSimplify && ((type == .LineString && ring.dist < tolerance) ||
                     (type == .Polygon && ring.area < sqTolerance))) {
-                        tile.numPoints += ring.members.count
-                        continue
+                    tile.numPoints += ring.members.count
+                    continue
                 }
 
                 var transformedRing = TileRing()
