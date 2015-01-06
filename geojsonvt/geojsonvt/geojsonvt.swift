@@ -92,13 +92,13 @@ class GeoJSONVT {
                 }
             }
 
-            if (cz < 0 && (z == self.maxZoom || tile.numPoints <= self.maxPoints ||
+            if (cz <= 0 && (z == self.maxZoom || tile.numPoints <= self.maxPoints ||
                 self.isClippedSquare(features: tile.features, extent: self.extent, buffer: self.buffer)) || z == self.baseZoom || z == cz) {
-                    tile.source = features
-                    continue
+                tile.source = features
+                continue
             }
 
-            if (cz >= 0) {
+            if (cz > 0) {
                 tile.source = features
             } else {
                 tile.source = []
@@ -123,36 +123,36 @@ class GeoJSONVT {
             var goLeft = false
             var goTop = false
 
-            if (cz >= 0) {
+            if (cz > 0) {
                 m = 1 << (cz - z)
                 goLeft = Double(cx) / Double(m) - Double(x) < 0.5
                 goTop  = Double(cy) / Double(m) - Double(y) < 0.5
             }
 
-            if (cz < 0 || goLeft) {
+            if (cz <= 0 || goLeft) {
                 left = Clip.clip(features: features, scale: z2, k1: Double(x) - k1, k2: Double(x) + k3, axis: 0, intersect: GeoJSONVT.intersectX)
             }
 
-            if (cz < 0 || !goLeft) {
+            if (cz <= 0 || !goLeft) {
                 right = Clip.clip(features: features, scale: z2, k1: Double(x) + k2, k2: Double(x) + k4, axis: 0, intersect: GeoJSONVT.intersectX)
             }
 
             if (left.count > 0) {
-                if (cz < 0 || goTop) {
+                if (cz <= 0 || goTop) {
                     tl = Clip.clip(features: left, scale: z2, k1: Double(y) - k1, k2: Double(y) + k3, axis: 1, intersect: GeoJSONVT.intersectY)
                 }
 
-                if (cz < 0 || !goTop) {
+                if (cz <= 0 || !goTop) {
                     bl = Clip.clip(features: left, scale: z2, k1: Double(y) + k2, k2: Double(y) + k4, axis: 1, intersect: GeoJSONVT.intersectY)
                 }
             }
 
             if (right.count > 0) {
-                if (cz < 0 || goTop) {
+                if (cz <= 0 || goTop) {
                     tr = Clip.clip(features: right, scale: z2, k1: Double(y) - k1, k2: Double(y) + k3, axis: 1, intersect: GeoJSONVT.intersectY)
                 }
 
-                if (cz < 0 || !goTop) {
+                if (cz <= 0 || !goTop) {
                     br = Clip.clip(features: right, scale: z2, k1: Double(y) + k2, k2: Double(y) + k4, axis: 1, intersect: GeoJSONVT.intersectY)
                 }
             }
