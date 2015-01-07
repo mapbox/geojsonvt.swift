@@ -85,8 +85,6 @@ class Convert {
 
             features.append(Convert.create(tags: tags, type: projectedType, geometry: geometry))
 
-            NSLog("features now has %i items", features.count)
-
         } else if (type == "MultiPolygon") {
 
             let rings = ProjectedGeometryContainer()
