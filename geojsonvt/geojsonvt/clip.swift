@@ -15,8 +15,8 @@ class Clip {
             let feature = features[i]
             let geometry = feature.geometry
             let type = feature.type
-            var min: Double
-            var max: Double
+            var min: Double = 0
+            var max: Double = 0
 
             if (feature.minPoint.isValid()) {
                 min = (axis == 0 ? feature.minPoint.x : feature.minPoint.y)
@@ -30,7 +30,7 @@ class Clip {
                 }
             }
 
-            var slices: ProjectedGeometryContainer
+            var slices = ProjectedGeometryContainer()
 
             if (type == .Point) {
                 slices = Clip.clipPoints(geometry: geometry as ProjectedGeometryContainer, k1: k1, k2: k2, axis: axis)
