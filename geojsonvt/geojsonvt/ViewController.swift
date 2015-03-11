@@ -52,7 +52,12 @@ class ViewController: UIViewController {
             for feature in tile!.features {
                 for geometry in feature.geometry {
                     if (feature.type == .Point) {
-                        //
+                        let radius: CGFloat = 1
+                        let point = geometry as TilePoint
+                        let x = CGFloat((Double(point.x) / extent) * Double(size))
+                        let y = CGFloat((Double(point.y) / extent) * Double(size))
+                        let dot = CGRect(x: (x - radius), y: (y - radius), width: (radius * 2), height: (radius * 2))
+                        CGContextAddEllipseInRect(c, dot);
                     } else {
                         var pointCount = 0
                         let ring = geometry as TileRing
