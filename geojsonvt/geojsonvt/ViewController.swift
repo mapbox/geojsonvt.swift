@@ -16,7 +16,12 @@ class ViewController: UIViewController {
             encoding: NSUTF8StringEncoding, error: nil)
         NSLog("loaded up feature JSON of %i bytes", json!.length)
 
-        self.vt = GeoJSONVT(data: json!, debug: true)
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { [unowned self] in
+            self.vt = GeoJSONVT(data: json!, baseZoom: 20, maxZoom: 5, debug: true)
+            dispatch_async(dispatch_get_main_queue(), { [unowned self] in
+                self.drawTile()
+            })
+        });
 
         let size = self.view.bounds.size.width
 
@@ -29,8 +34,6 @@ class ViewController: UIViewController {
             return gesture
             }())
         self.view.addSubview(self.imageView)
-
-        self.drawTile()
     }
 
     func drawTile() {
