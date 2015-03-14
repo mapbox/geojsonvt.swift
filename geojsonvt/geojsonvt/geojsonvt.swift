@@ -82,11 +82,10 @@ class GeoJSONVT {
                     Util.timeEnd("creation")
 
                     let key = "z\(z):"
-                    if (self.stats.count - 1 >= z) {
-                        var value = self.stats[key]! + 1
-                        self.stats[key] = value
+                    if let value = self.stats[key] {
+                        self.stats[key] = value + 1;
                     } else {
-                        self.stats[key] = 1
+                        self.stats[key] = 1;
                     }
                     self.total++
                 }
