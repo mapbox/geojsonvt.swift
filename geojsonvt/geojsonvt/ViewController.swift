@@ -17,7 +17,7 @@ class ViewController: UIViewController {
         NSLog("loaded up feature JSON of %i bytes", json!.length)
 
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { [unowned self] in
-            self.vt = GeoJSONVT(data: json!, baseZoom: 20, maxZoom: 5, debug: true)
+            self.vt = GeoJSONVT(data: json! as String, debug: true)
             dispatch_async(dispatch_get_main_queue(), { [unowned self] in
                 self.drawTile()
             })
@@ -56,14 +56,14 @@ class ViewController: UIViewController {
                 for geometry in feature.geometry {
                     if (feature.type == .Point) {
                         let radius: CGFloat = 1
-                        let point = geometry as TilePoint
+                        let point = geometry as! TilePoint
                         let x = CGFloat((Double(point.x) / extent) * Double(size))
                         let y = CGFloat((Double(point.y) / extent) * Double(size))
                         let dot = CGRect(x: (x - radius), y: (y - radius), width: (radius * 2), height: (radius * 2))
                         CGContextAddEllipseInRect(c, dot);
                     } else {
                         var pointCount = 0
-                        let ring = geometry as TileRing
+                        let ring = geometry as! TileRing
                         for point in ring.points {
                             let x = CGFloat((Double(point.x) / extent) * Double(size))
                             let y = CGFloat((Double(point.y) / extent) * Double(size))

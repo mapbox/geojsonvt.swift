@@ -13,17 +13,17 @@ class Simplify {
         var sqDist: Double = 0
         var index: Int = 0
 
-        (points.members[first] as ProjectedPoint).z = 1
-        (points.members[last]  as ProjectedPoint).z = 1
+        (points.members[first] as! ProjectedPoint).z = 1
+        (points.members[last]  as! ProjectedPoint).z = 1
 
         while (last > 0) {
 
             maxSqDist = 0
 
             for i in (first + 1)..<last {
-                sqDist = Simplify.getSqSegDist(points.members[i] as ProjectedPoint,
-                    a: points.members[first] as ProjectedPoint,
-                    b: points.members[last]  as ProjectedPoint)
+                sqDist = Simplify.getSqSegDist(points.members[i] as! ProjectedPoint,
+                    a: points.members[first] as! ProjectedPoint,
+                    b: points.members[last]  as! ProjectedPoint)
 
                 if (sqDist > maxSqDist) {
                     index = i
@@ -32,7 +32,7 @@ class Simplify {
             }
 
             if (maxSqDist > sqTolerance) {
-                (points.members[index] as ProjectedPoint).z = Double(maxSqDist)
+                (points.members[index] as! ProjectedPoint).z = Double(maxSqDist)
                 stack.append(first)
                 stack.append(index)
                 stack.append(index)

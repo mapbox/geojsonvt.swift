@@ -12,7 +12,7 @@ class GeoJSONVT {
 
     var tiles = [Int: Tile]()
 
-    var stats = [String: Int]()
+    var stats = [Int: Int]()
 
     var total = 0
 
@@ -31,7 +31,7 @@ class GeoJSONVT {
         let z2 = 1 << baseZoom
 
         let deserializedData = NSJSONSerialization.JSONObjectWithData(data.dataUsingEncoding(NSUTF8StringEncoding,
-            allowLossyConversion: false)!, options: nil, error: nil) as JSON
+            allowLossyConversion: false)!, options: nil, error: nil) as! JSON
 
         let features = Convert.convert(data: deserializedData, tolerance: self.tolerance / (Double(z2) * self.extent))
 
@@ -45,7 +45,11 @@ class GeoJSONVT {
         if (self.debug) {
             NSLog("features: %i, points: %i", self.tiles[0]!.numFeatures, self.tiles[0]!.numPoints)
             Util.timeEnd("generate tiles up to z\(maxZoom)")
-            NSLog("tiles generated: %i %@", self.total, self.stats)
+            NSLog("tiles generated: %i {", self.total)
+            for (k, v) in Array(self.stats).sorted({ $0.0 < $1.0 }) {
+                NSLog("    z%i: %i", k, v)
+            }
+            NSLog("}")
         }
     }
 
@@ -54,10 +58,10 @@ class GeoJSONVT {
         var stack: [Any] = [features, z, x, y]
 
         while (stack.count > 0) {
-            let features = stack.removeAtIndex(0) as [ProjectedFeature]
-            let z = stack.removeAtIndex(0) as Int
-            let x = stack.removeAtIndex(0) as Int
-            let y = stack.removeAtIndex(0) as Int
+            let features = stack.removeAtIndex(0) as! [ProjectedFeature]
+            let z = stack.removeAtIndex(0) as! Int
+            let x = stack.removeAtIndex(0) as! Int
+            let y = stack.removeAtIndex(0) as! Int
 
             let z2 = 1 << z
             let id = GeoJSONVT.toID(z: z, x: x, y: y)
@@ -81,23 +85,19 @@ class GeoJSONVT {
                         tile.numFeatures, tile.numPoints, tile.numSimplified)
                     Util.timeEnd("creation")
 
-                    let key = "z\(z):"
-                    if let value = self.stats[key] {
-                        self.stats[key] = value + 1;
-                    } else {
-                        self.stats[key] = 1;
-                    }
+                    let key = z
+                    self.stats[key] = (self.stats[key] != nil ? self.stats[key]! + 1 : 1)
                     self.total++
                 }
             }
 
-            if (cz <= 0 && (z == self.maxZoom || tile.numPoints <= self.maxPoints ||
+            if (cz < 0 && (z == self.maxZoom || tile.numPoints <= self.maxPoints ||
                 self.isClippedSquare(features: tile.features, extent: self.extent, buffer: self.buffer)) || z == self.baseZoom || z == cz) {
                 tile.source = features
                 continue
             }
 
-            if (cz > 0) {
+            if (cz >= 0) {
                 tile.source = features
             } else {
                 tile.source = []
@@ -122,36 +122,36 @@ class GeoJSONVT {
             var goLeft = false
             var goTop = false
 
-            if (cz > 0) {
+            if (cz >= 0) {
                 m = 1 << (cz - z)
                 goLeft = Double(cx) / Double(m) - Double(x) < 0.5
                 goTop  = Double(cy) / Double(m) - Double(y) < 0.5
             }
 
-            if (cz <= 0 || goLeft) {
+            if (cz < 0 || goLeft) {
                 left = Clip.clip(features: features, scale: z2, k1: Double(x) - k1, k2: Double(x) + k3, axis: 0, intersect: GeoJSONVT.intersectX)
             }
 
-            if (cz <= 0 || !goLeft) {
+            if (cz < 0 || !goLeft) {
                 right = Clip.clip(features: features, scale: z2, k1: Double(x) + k2, k2: Double(x) + k4, axis: 0, intersect: GeoJSONVT.intersectX)
             }
 
             if (left.count > 0) {
-                if (cz <= 0 || goTop) {
+                if (cz < 0 || goTop) {
                     tl = Clip.clip(features: left, scale: z2, k1: Double(y) - k1, k2: Double(y) + k3, axis: 1, intersect: GeoJSONVT.intersectY)
                 }
 
-                if (cz <= 0 || !goTop) {
+                if (cz < 0 || !goTop) {
                     bl = Clip.clip(features: left, scale: z2, k1: Double(y) + k2, k2: Double(y) + k4, axis: 1, intersect: GeoJSONVT.intersectY)
                 }
             }
 
             if (right.count > 0) {
-                if (cz <= 0 || goTop) {
+                if (cz < 0 || goTop) {
                     tr = Clip.clip(features: right, scale: z2, k1: Double(y) - k1, k2: Double(y) + k3, axis: 1, intersect: GeoJSONVT.intersectY)
                 }
 
-                if (cz <= 0 || !goTop) {
+                if (cz < 0 || !goTop) {
                     br = Clip.clip(features: right, scale: z2, k1: Double(y) + k2, k2: Double(y) + k4, axis: 1, intersect: GeoJSONVT.intersectY)
                 }
             }
@@ -249,8 +249,8 @@ class GeoJSONVT {
             return false
         }
 
-        for i in 0...(feature.geometry.first! as TileRing).points.count {
-            let p = (feature.geometry.first! as TileRing).points[i] as TilePoint
+        for i in 0...(feature.geometry.first! as! TileRing).points.count {
+            let p = (feature.geometry.first! as! TileRing).points[i]
             if ((Double(p.x) != -buffer && Double(p.x) != extent + buffer) ||
                 (Double(p.y) != -buffer && Double(p.y) != extent + buffer)) {
                     return false

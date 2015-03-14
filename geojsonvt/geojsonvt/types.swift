@@ -2,8 +2,8 @@ import Foundation
 
 class LonLat {
 
-    let lon: Double = 0
-    let lat: Double = 0
+    let lon: Double
+    let lat: Double
 
     init(coordinates: [Double]) {
         self.lon = coordinates[0]
@@ -58,11 +58,11 @@ enum ProjectedFeatureType: Int {
 
 class ProjectedFeature {
 
-    let geometry = ProjectedGeometry()
+    let geometry: ProjectedGeometry
     let type: ProjectedFeatureType
-    let tags = Tags()
-    let minPoint = ProjectedPoint()
-    let maxPoint = ProjectedPoint()
+    let tags: Tags
+    let minPoint: ProjectedPoint
+    let maxPoint: ProjectedPoint
 
     init(geometry: ProjectedGeometry, type: ProjectedFeatureType, tags: Tags) {
         self.geometry = geometry
@@ -79,8 +79,8 @@ class TileGeometry {
 
 class TilePoint: TileGeometry {
 
-    let x: Int = 0
-    let y: Int = 0
+    let x: Int
+    let y: Int
 
     init(x: Int, y: Int) {
         self.x = x
@@ -105,9 +105,9 @@ typealias Tags = Dictionary<String, String>
 
 class TileFeature {
 
-    let geometry = [TileGeometry]()
+    let geometry: [TileGeometry]
     let type: TileFeatureType
-    let tags = Tags()
+    let tags: Tags
 
     init(geometry: [TileGeometry], type: TileFeatureType, tags: Tags) {
         self.geometry = geometry

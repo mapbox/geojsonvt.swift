@@ -29,7 +29,7 @@ class Tile {
     class func addFeature(inout #tile: Tile, feature: ProjectedFeature, z2: Int, tx: Int, ty: Int,
         tolerance: Double, extent: Double, noSimplify: Bool) {
 
-        let geom = feature.geometry as ProjectedGeometryContainer
+        let geom = feature.geometry as! ProjectedGeometryContainer
         let type = feature.type
         var transformed = [TileGeometry]()
         let sqTolerance = tolerance * tolerance
@@ -37,14 +37,14 @@ class Tile {
 
         if (type == .Point) {
             for i in 0..<geom.members.count {
-                let p = geom.members[i] as ProjectedPoint
+                let p = geom.members[i] as! ProjectedPoint
                 transformed.append(Tile.transformPoint(p, z2: z2, tx: tx, ty: ty, extent: extent))
                 tile.numPoints++
                 tile.numSimplified++
             }
         } else {
             for i in 0..<geom.members.count {
-                ring = geom.members[i] as ProjectedGeometryContainer
+                ring = geom.members[i] as! ProjectedGeometryContainer
 
                 if (!noSimplify && ((type == .LineString && ring.dist < tolerance) ||
                     (type == .Polygon && ring.area < sqTolerance))) {
@@ -55,7 +55,7 @@ class Tile {
                 var transformedRing = TileRing()
 
                 for j in 0..<ring.members.count {
-                    let p = ring.members[j] as ProjectedPoint
+                    let p = ring.members[j] as! ProjectedPoint
                     if (noSimplify || p.z > Double(sqTolerance)) {
                         let transformedPoint = Tile.transformPoint(p, z2: z2, tx: tx, ty: ty, extent: extent)
                         transformedRing.points.append(transformedPoint)

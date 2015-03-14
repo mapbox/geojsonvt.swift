@@ -33,9 +33,9 @@ class Clip {
             var slices = ProjectedGeometryContainer()
 
             if (type == .Point) {
-                slices = Clip.clipPoints(geometry: geometry as ProjectedGeometryContainer, k1: k1, k2: k2, axis: axis)
+                slices = Clip.clipPoints(geometry: geometry as! ProjectedGeometryContainer, k1: k1, k2: k2, axis: axis)
             } else {
-                slices = Clip.clipGeometry(geometry: geometry as ProjectedGeometryContainer, k1: k1, k2: k2, axis: axis,
+                slices = Clip.clipGeometry(geometry: geometry as! ProjectedGeometryContainer, k1: k1, k2: k2, axis: axis,
                     intersect: intersect, closed: (type == ProjectedFeatureType.Polygon))
             }
 
@@ -52,7 +52,7 @@ class Clip {
         var slice = ProjectedGeometryContainer()
 
         for i in 0..<geometry.members.count {
-            let a = geometry.members[i] as ProjectedPoint
+            let a = geometry.members[i] as! ProjectedPoint
             let ak = (axis == 0 ? a.x : a.y)
 
             if (ak >= k1 && ak <= k2) {
@@ -73,7 +73,7 @@ class Clip {
             var ak: Double = 0
             var bk: Double = 0
             var b = ProjectedPoint()
-            let points = geometry.members[i] as ProjectedGeometryContainer
+            let points = geometry.members[i] as! ProjectedGeometryContainer
             let area = points.area
             let dist = points.dist
             let len = points.members.count
@@ -82,8 +82,8 @@ class Clip {
             var slice = ProjectedGeometryContainer()
 
             for j in 0..<(len - 1) {
-                a = (b.isValid() ? b : points.members[j] as ProjectedPoint)
-                b = points.members[j + 1] as ProjectedPoint
+                a = (b.isValid() ? b : points.members[j] as! ProjectedPoint)
+                b = points.members[j + 1] as! ProjectedPoint
                 ak = (bk > 0 ? bk : (axis == 0 ? a.x : a.y))
                 bk = (axis == 0 ? b.x : b.y)
 
@@ -124,7 +124,7 @@ class Clip {
                 }
             }
 
-            a = points.members[len - 1] as ProjectedPoint
+            a = points.members[len - 1] as! ProjectedPoint
             ak = (axis == 0 ? a.x : a.y)
 
             if (ak >= k1 && ak <= k2) {
@@ -132,8 +132,8 @@ class Clip {
             }
 
             if (closed && slice.members.count > 0) {
-                let first = slice.members[0] as ProjectedPoint
-                let last  = slice.members[slice.members.count - 1] as ProjectedPoint
+                let first = slice.members[0] as! ProjectedPoint
+                let last  = slice.members[slice.members.count - 1] as! ProjectedPoint
                 if (!first.isEqualToPoint(last)) {
                     slice.members.append(ProjectedPoint(x: first.x, y: first.y, z: first.z))
                 }

@@ -8,15 +8,14 @@ class Convert {
 
         var features = [ProjectedFeature]()
 
-        if ((data["type"] as String) == "FeatureCollection") {
-
-            let count = (data["features"] as [JSON]).count
+        if ((data["type"] as! String) == "FeatureCollection") {
+            let json = data["features"] as! [JSON]
+            let count = json.count
             NSLog("there are %i total features to convert", count)
-
-            for i in 0..<(data["features"] as [JSON]).count {
-                Convert.convertFeature(features: &features, feature: (data["features"] as [JSON])[i], tolerance: tolerance)
+            for i in 0..<count {
+                Convert.convertFeature(features: &features, feature: json[i], tolerance: tolerance)
             }
-        } else if (data["type"] as String == "Feature") {
+        } else if (data["type"] as! String == "Feature") {
             Convert.convertFeature(features: &features, feature: data, tolerance: tolerance)
         } else {
             Convert.convertFeature(features: &features, feature: ["geometry": data], tolerance: tolerance)
@@ -27,13 +26,13 @@ class Convert {
 
     class func convertFeature(inout #features: [ProjectedFeature], feature: JSON, tolerance: Double) {
 
-        let geom = feature["geometry"] as JSON
-        let type = geom["type"] as String
-        let tags = feature["properties"] as Tags
+        let geom = feature["geometry"] as! JSON
+        let type = geom["type"] as! String
+        let tags = feature["properties"] as! Tags
 
         if (type == "Point") {
 
-            let coordinates = geom["coordinates"] as [Double]
+            let coordinates = geom["coordinates"] as! [Double]
             let point = Convert.projectPoint(LonLat(coordinates: coordinates))
 
             let geometry = ProjectedGeometryContainer(members: [point])
@@ -42,7 +41,7 @@ class Convert {
 
         } else if (type == "MultiPoint") {
 
-            let coordinatePairs = geom["coordinates"] as [[Double]]
+            let coordinatePairs = geom["coordinates"] as! [[Double]]
             var points = [LonLat]()
             for coordinatePair in coordinatePairs {
                 points.append(LonLat(coordinates: coordinatePair))
@@ -54,7 +53,7 @@ class Convert {
 
         } else if (type == "LineString") {
 
-            let coordinatePairs = geom["coordinates"] as [[Double]]
+            let coordinatePairs = geom["coordinates"] as! [[Double]]
             var points = [LonLat]()
             for coordinatePair in coordinatePairs {
                 points.append(LonLat(coordinates: coordinatePair))
@@ -67,7 +66,7 @@ class Convert {
         } else if (type == "MultiLineString" || type == "Polygon") {
 
             var rings = ProjectedGeometryContainer()
-            let lines = geom["coordinates"] as [[[Double]]]
+            let lines = geom["coordinates"] as! [[[Double]]]
             for line in lines {
                 var points = [LonLat]()
                 for coordinatePair in line {
@@ -88,7 +87,7 @@ class Convert {
         } else if (type == "MultiPolygon") {
 
             let rings = ProjectedGeometryContainer()
-            let polygons = geom["coordinates"] as [[[[Double]]]]
+            let polygons = geom["coordinates"] as! [[[[Double]]]]
             for polygon in polygons {
                 for line in polygon {
                     var points = [LonLat]()
@@ -106,14 +105,14 @@ class Convert {
 
         } else if (type == "GeometryCollection") {
 
-            let geometries = geom["geometries"] as [JSON]
+            let geometries = geom["geometries"] as! [JSON]
             for geometry in geometries {
                 Convert.convertFeature(features: &features, feature: geometry, tolerance: tolerance)
             }
 
         } else {
 
-            let geometryType = geom["type"] as String
+            let geometryType = geom["type"] as! String
             println("Unsupported GeoJSON type: \(geometryType)")
 
         }
@@ -158,8 +157,8 @@ class Convert {
         var b = ProjectedPoint()
 
         for i in 0..<(geometryContainer.members.count - 1) {
-            a = (b.isValid() ? b : geometryContainer.members[i] as ProjectedPoint)
-            b = geometryContainer.members[i + 1] as ProjectedPoint
+            a = (b.isValid() ? b : geometryContainer.members[i] as! ProjectedPoint)
+            b = geometryContainer.members[i + 1] as! ProjectedPoint
 
             area += a.x * b.y - b.x * a.y
             dist += abs(b.x - a.x) + abs(b.y - a.y)
@@ -176,10 +175,10 @@ class Convert {
         var maxPoint = feature.maxPoint
 
         if (feature.type == ProjectedFeatureType.Point) {
-            Convert.calcRingBBox(minPoint: &minPoint, maxPoint: &maxPoint, geometry: geometry as ProjectedGeometryContainer)
+            Convert.calcRingBBox(minPoint: &minPoint, maxPoint: &maxPoint, geometry: geometry as! ProjectedGeometryContainer)
         } else {
-            for i in 0..<(geometry as ProjectedGeometryContainer).members.count {
-                let featureGeometry = (geometry as ProjectedGeometryContainer).members[i] as ProjectedGeometryContainer
+            for i in 0..<(geometry as! ProjectedGeometryContainer).members.count {
+                let featureGeometry = (geometry as! ProjectedGeometryContainer).members[i] as! ProjectedGeometryContainer
                 Convert.calcRingBBox(minPoint: &minPoint, maxPoint: &maxPoint, geometry: featureGeometry)
             }
         }
@@ -188,7 +187,7 @@ class Convert {
     class func calcRingBBox(inout #minPoint: ProjectedPoint, inout maxPoint: ProjectedPoint, geometry: ProjectedGeometryContainer) {
 
         for i in 0..<geometry.members.count {
-            let p = geometry.members[i] as ProjectedPoint
+            let p = geometry.members[i] as! ProjectedPoint
             minPoint.x = min(p.x, minPoint.x)
             maxPoint.x = max(p.x, maxPoint.x)
             minPoint.y = min(p.y, minPoint.y)
