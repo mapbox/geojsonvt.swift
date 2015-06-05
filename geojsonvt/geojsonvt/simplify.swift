@@ -32,7 +32,7 @@ class Simplify {
             }
 
             if (maxSqDist > sqTolerance) {
-                (points.members[index] as! ProjectedPoint).z = Double(maxSqDist)
+                (points.members[index] as! ProjectedPoint).z = maxSqDist
                 stack.append(first)
                 stack.append(index)
                 stack.append(index)
