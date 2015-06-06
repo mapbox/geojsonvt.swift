@@ -134,7 +134,7 @@ class Clip {
             if (closed && slice.members.count > 0) {
                 let first = slice.members[0] as! ProjectedPoint
                 let last  = slice.members[slice.members.count - 1] as! ProjectedPoint
-                if (!first.isEqualToPoint(last)) {
+                if (first != last) {
                     slice.members.append(ProjectedPoint(x: first.x, y: first.y, z: first.z))
                 }
             }

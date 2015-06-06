@@ -32,10 +32,10 @@ class ProjectedPoint: ProjectedGeometry {
         return (x >= 0 && y >= 0 && z >= 0)
     }
 
-    func isEqualToPoint(p2: ProjectedPoint) -> Bool {
-        return (self.x == p2.x && self.y == p2.y && self.z == p2.z)
-    }
+}
 
+func != (left: ProjectedPoint, right: ProjectedPoint) -> Bool {
+    return (left.x != right.x || left.y != right.y || left.z != right.z)
 }
 
 class ProjectedGeometryContainer: ProjectedGeometry {
